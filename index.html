@@ -2,253 +2,174 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>My Kia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kia Cerato 1 Log</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #000000;
-            --card-bg: #1C1C1E;
-            --text-primary: #FFFFFF;
-            --text-secondary: #8E8E93;
-            --accent-color: #FF3B30; /* Красный как у Kia и Apple Error */
-            --accent-blue: #0A84FF;
-            --separator: #38383A;
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
+            --bg-color: var(--tg-theme-bg-color, #1c1c1e);
+            --text-color: var(--tg-theme-text-color, #ffffff);
+            --hint-color: var(--tg-theme-hint-color, #999999);
+            --link-color: var(--tg-theme-link-color, #2481cc);
+            --button-color: var(--tg-theme-button-color, #2481cc);
+            --secondary-bg: var(--tg-theme-secondary-bg-color, #2c2c2e);
+            --kia-red: #d32f2f;
+            --delete-color: #ff3b30;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, Helvetica, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            overflow: hidden; /* Скроллим только контент */
+            user-select: none;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
+            height: 100vh;
         }
 
-        /* --- LAYOUT --- */
-        .screen {
+        .content {
             flex: 1;
             overflow-y: auto;
-            padding: calc(var(--safe-top) + 20px) 16px calc(var(--safe-bottom) + 80px) 16px;
-            display: none; /* Скрываем все экраны по умолчанию */
-            animation: fadeIn 0.3s ease;
-        }
-
-        .screen.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-
-        h1 { font-size: 34px; font-weight: 700; margin: 0 0 20px 0; letter-spacing: 0.3px; }
-        h2 { font-size: 20px; color: var(--text-secondary); margin: 0 0 10px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
-
-        /* --- FORMS --- */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-
-        .input-group {
-            border-bottom: 1px solid var(--separator);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group:last-child { border-bottom: none; }
-
-        label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        input, select, textarea {
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 17px;
-            width: 100%;
-            padding: 0;
-            font-family: inherit;
-        }
-        
-        input:focus, select:focus { outline: none; }
-
-        /* Кастомный селект */
-        select {
-            appearance: none;
-            background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238E8E93' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat right center;
-        }
-
-        /* --- BUTTONS --- */
-        .btn-main {
-            background: var(--accent-color);
-            color: white;
-            width: 100%;
-            padding: 16px;
-            border-radius: 14px;
-            border: none;
-            font-size: 17px;
-            font-weight: 600;
-            margin-top: 10px;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .btn-main:active { transform: scale(0.96); opacity: 0.8; }
-
-        /* --- ARCHIVE LIST --- */
-        .stat-card {
-            background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+            overflow-x: hidden;
             padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 1px solid #333;
+            padding-bottom: 100px;
         }
-        .stat-total { font-size: 32px; font-weight: 700; color: var(--text-primary); }
-        .stat-label { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; }
+
+        h1 { margin: 0 0 5px 0; font-size: 24px; font-weight: 700; }
+        .subtitle { color: var(--hint-color); font-size: 14px; margin-bottom: 20px; }
+
+        /* Ввод данных */
+        .input-card {
+            background-color: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 0 16px;
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            border-bottom: 1px solid var(--bg-color);
+            padding: 12px 0;
+        }
+        .input-row:last-child { border-bottom: none; }
+
+        label { display: block; font-size: 12px; color: var(--hint-color); margin-bottom: 4px; }
+        input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; }
+
+        /* История и Свайп */
+        .log-item-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: var(--delete-color); /* Красный фон лежит под карточкой */
+        }
 
         .log-item {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            background-color: var(--secondary-bg);
+            padding: 14px;
             position: relative;
+            z-index: 10; /* Карточка всегда выше кнопки */
+            transition: transform 0.2s ease-out;
+            border-radius: 12px;
+            /* Важно: цвет фона должен быть непрозрачным */
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05); 
         }
 
-        .log-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
-        .log-date { color: var(--text-secondary); font-size: 14px; }
-        .log-km { color: var(--text-primary); font-weight: 600; font-size: 15px; }
-        
-        .log-title { font-size: 17px; font-weight: 500; margin-bottom: 4px; }
-        .log-details { font-size: 15px; color: var(--text-secondary); }
-        .log-cost { color: var(--accent-color); font-weight: 600; margin-top: 4px; display: block;}
+        .log-item.swiped {
+            transform: translateX(-80px); /* Сдвигаем карточку влево */
+        }
 
-        .delete-btn {
+        /* Текст "Удалить" теперь лежит ПОД карточкой */
+        .swipe-delete-text {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255, 59, 48, 0.15);
-            color: #FF453A;
-            border: none;
-            border-radius: 8px;
-            padding: 4px 10px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* --- TAB BAR (Bottom Navigation) --- */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: calc(50px + var(--safe-bottom));
-            background: rgba(28, 28, 30, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 100%;
             display: flex;
-            justify-content: space-around;
-            padding-bottom: var(--safe-bottom);
-            z-index: 1000;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 10px;
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 1; /* Ниже карточки */
         }
 
-        .tab-btn.active { color: var(--accent-color); }
-        
-        .tab-icon { font-size: 24px; margin-top: 5px;}
+        .log-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .log-date { font-size: 13px; color: var(--hint-color); }
+        .log-part { font-weight: 600; font-size: 17px; margin-bottom: 4px; line-height: 1.2; }
+        .log-details { font-size: 14px; color: var(--hint-color); }
+        .log-cost { color: var(--kia-red); font-weight: bold; margin-top: 6px; display: block; font-size: 15px;}
 
+        /* Нижнее меню */
+        .tab-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background-color: var(--secondary-bg);
+            display: flex; justify-content: space-around;
+            padding: 10px 0; padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            border-top: 1px solid rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .tab-btn { background: none; border: none; color: var(--hint-color); font-size: 10px; display: flex; flex-direction: column; align-items: center; }
+        .tab-btn.active { color: var(--button-color); }
+        .tab-icon { font-size: 24px; margin-bottom: 4px; }
+        
+        /* Скрытые экраны */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fade 0.2s; }
+        @keyframes fade { from{opacity:0} to{opacity:1}}
     </style>
 </head>
 <body>
 
-    <div id="screen-add" class="screen active">
-        <h1>Моя Kia Cerato</h1>
-        
-        <div class="card">
-            <div class="input-group">
+    <div id="screen-garage" class="screen active content">
+        <h1 id="main-title">Kia Cerato 1</h1>
+        <div class="subtitle" id="garage-subtitle">Новая запись</div>
+
+        <div class="input-card">
+            <div class="input-row">
                 <label>Пробег (км)</label>
-                <input type="tel" id="input-mileage" placeholder="185 000">
+                <input type="number" id="inp-mileage" placeholder="Например: 295000">
             </div>
-            
-            <div class="input-group">
-                <label>Категория работ</label>
-                <select id="input-category">
-                    <option value="" disabled selected>Выберите...</option>
-                    <option value="ТО">ТО (Масло/Фильтра)</option>
-                    <option value="Подвеска">Подвеска (Рычаги/Стойки)</option>
-                    <option value="Двигатель">Двигатель (ГРМ/Ремни)</option>
+            <div class="input-row">
+                <label>Категория</label>
+                <select id="inp-category">
+                    <option value="ТО">ТО (Масло/Фильтры)</option>
+                    <option value="Подвеска">Подвеска</option>
+                    <option value="Двигатель">Двигатель / ГРМ</option>
                     <option value="Тормоза">Тормозная система</option>
-                    <option value="Шины">Шины / Диски</option>
-                    <option value="Электрика">Электрика / Лампы</option>
-                    <option value="Тюнинг">Тюнинг / Аксессуары</option>
+                    <option value="Электрика">Электрика</option>
+                    <option value="Кузов">Кузов / Салон</option>
                     <option value="Другое">Другое</option>
                 </select>
             </div>
-
-            <div class="input-group">
-                <label>Название детали / Работы</label>
-                <input type="text" id="input-title" placeholder="Напр: Стойки стаба CTR">
+            <div class="input-row">
+                <label>Что сделано</label>
+                <input type="text" id="inp-title" placeholder="Название работ">
             </div>
-
-            <div class="input-group">
-                <label>Цена (₽)</label>
-                <input type="tel" id="input-cost" placeholder="0">
+            <div class="input-row">
+                <label>Стоимость (₽)</label>
+                <input type="number" id="inp-cost" placeholder="0">
             </div>
-
-            <div class="input-group">
-                <label>Заметки (Артикул, Бренд)</label>
-                <input type="text" id="input-notes" placeholder="Комментарий...">
+            <div class="input-row">
+                <label>Заметки</label>
+                <input type="text" id="inp-notes" placeholder="Бренд, артикул...">
             </div>
         </div>
-
-        <button class="btn-main" onclick="addRecord()">Сохранить в архив</button>
     </div>
 
-    <div id="screen-archive" class="screen">
-        <h1>Архив</h1>
-        
-        <div class="stat-card">
-            <div class="stat-label">Всего вложено</div>
-            <div class="stat-total" id="total-spent">0 ₽</div>
-        </div>
-
-        <h2>История ремонтов</h2>
-        <div id="archive-list">
-            </div>
-        
-        <div style="text-align: center; color: #555; margin-top: 30px; font-size: 13px;">
-            Данные хранятся на устройстве
-        </div>
+    <div id="screen-archive" class="screen content">
+        <h1>История</h1>
+        <div class="subtitle" id="total-spent">Всего: 0 ₽</div>
+        <div id="logs-container"></div>
     </div>
 
     <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('add')">
-            <span class="tab-icon">🔧</span>
+        <button class="tab-btn active" onclick="switchTab('garage')">
+            <span class="tab-icon">🛠</span>
             <span>Гараж</span>
         </button>
         <button class="tab-btn" onclick="switchTab('archive')">
@@ -258,129 +179,178 @@
     </div>
 
     <script>
-        const STORAGE_KEY = 'kia_cerato_log_ios_v1';
-        let repairs = [];
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
+        tg.MainButton.show();
+        
+        const STORAGE_KEY = 'kia_tg_log_v2';
+        let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        let editingId = null;
 
-        // --- INIT ---
-        window.onload = function() {
-            loadData();
-            // Автозаполнение пробега из последней записи
-            if(repairs.length > 0) {
-                document.getElementById('input-mileage').value = repairs[0].mileage;
+        if (logs.length > 0) document.getElementById('inp-mileage').value = logs[0].mileage;
+
+        tg.MainButton.onClick(() => {
+            if (!document.getElementById('screen-garage').classList.contains('active')) {
+                switchTab('garage');
+                return;
             }
-        };
+            saveRecord();
+        });
 
-        // --- NAVIGATION ---
-        function switchTab(tabName) {
-            // UI переключение
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
-
-            if (tabName === 'add') {
-                document.getElementById('screen-add').classList.add('active');
+        function switchTab(tab) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            if (tab === 'garage') {
+                document.getElementById('screen-garage').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                if (editingId) {
+                    tg.MainButton.text = "СОХРАНИТЬ";
+                    tg.MainButton.color = "#34c759";
+                } else {
+                    tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
+                    tg.MainButton.color = tg.themeParams.button_color;
+                }
+                tg.MainButton.show();
             } else {
+                exitEditMode();
                 document.getElementById('screen-archive').classList.add('active');
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                renderArchive();
+                tg.MainButton.hide();
+                renderLogs();
             }
         }
 
-        // --- DATA LOGIC ---
-        function loadData() {
-            const data = localStorage.getItem(STORAGE_KEY);
-            if (data) {
-                repairs = JSON.parse(data);
-            }
-        }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(repairs));
-        }
-
-        function addRecord() {
-            const mileage = document.getElementById('input-mileage').value;
-            const category = document.getElementById('input-category').value;
-            const title = document.getElementById('input-title').value;
-            const cost = document.getElementById('input-cost').value;
-            const notes = document.getElementById('input-notes').value;
-
-            if (!mileage || category === "" || !title) {
-                alert('Пожалуйста, заполните пробег, категорию и название.');
+        function saveRecord() {
+            const mileage = document.getElementById('inp-mileage').value;
+            const title = document.getElementById('inp-title').value;
+            const costStr = document.getElementById('inp-cost').value;
+            
+            if (!mileage || !title) {
+                tg.showPopup({title: 'Ошибка', message: 'Введите пробег и название'});
                 return;
             }
 
-            const record = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('ru-RU'),
-                timestamp: Date.now(),
+            const recordData = {
+                id: editingId || Date.now(),
+                date: editingId ? getLogById(editingId).date : new Date().toLocaleDateString('ru-RU'),
                 mileage: mileage,
-                category: category,
+                category: document.getElementById('inp-category').value,
                 title: title,
-                cost: cost ? parseInt(cost.replace(/\D/g,'')) : 0, // Убираем нецифровые символы
-                notes: notes
+                cost: costStr ? parseInt(costStr.replace(/\D/g,'')) : 0,
+                notes: document.getElementById('inp-notes').value
             };
 
-            repairs.unshift(record); // Добавляем в начало списка
-            saveData();
-            
-            // Очистка формы
-            document.getElementById('input-title').value = '';
-            document.getElementById('input-cost').value = '';
-            document.getElementById('input-notes').value = '';
-            document.getElementById('input-category').selectedIndex = 0;
-
-            // Вибрация (если поддерживается)
-            if(navigator.vibrate) navigator.vibrate(50);
-            
-            alert('Запись добавлена в Архив!');
-            switchTab('archive');
-        }
-
-        function deleteRecord(id) {
-            if(confirm('Удалить эту запись безвозвратно?')) {
-                repairs = repairs.filter(r => r.id !== id);
-                saveData();
-                renderArchive();
+            if (editingId) {
+                logs = logs.map(l => l.id === editingId ? recordData : l);
+            } else {
+                logs.unshift(recordData);
             }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+            clearForm();
+            exitEditMode();
+            tg.showPopup({message: 'Сохранено!'});
         }
 
-        // --- RENDER ---
-        function renderArchive() {
-            const list = document.getElementById('archive-list');
-            const totalEl = document.getElementById('total-spent');
-            list.innerHTML = '';
-            
-            let totalSum = 0;
+        window.startEdit = function(id) {
+            const log = getLogById(id);
+            if (!log) return;
+            editingId = id;
+            document.getElementById('inp-mileage').value = log.mileage;
+            document.getElementById('inp-category').value = log.category;
+            document.getElementById('inp-title').value = log.title;
+            document.getElementById('inp-cost').value = log.cost;
+            document.getElementById('inp-notes').value = log.notes;
+            document.getElementById('garage-subtitle').innerText = `Редактирование`;
+            switchTab('garage');
+        }
 
-            if (repairs.length === 0) {
-                list.innerHTML = '<div style="text-align:center; padding: 20px; color: #555;">Архив пуст</div>';
-                totalEl.innerText = '0 ₽';
+        function exitEditMode() {
+            editingId = null;
+            document.getElementById('garage-subtitle').innerText = "Новая запись";
+            tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
+            tg.MainButton.color = tg.themeParams.button_color;
+        }
+
+        function clearForm() {
+            document.getElementById('inp-title').value = '';
+            document.getElementById('inp-cost').value = '';
+            document.getElementById('inp-notes').value = '';
+        }
+        
+        function getLogById(id) { return logs.find(l => l.id === id); }
+
+        function renderLogs() {
+            const container = document.getElementById('logs-container');
+            container.innerHTML = '';
+            let total = 0;
+
+            if (logs.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:gray;margin-top:20px;">Пока пусто</p>';
+                document.getElementById('total-spent').innerText = 'Всего: 0 ₽';
                 return;
             }
 
-            repairs.forEach(item => {
-                totalSum += item.cost;
+            logs.forEach(log => {
+                total += log.cost;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'log-item-wrapper';
                 
-                const div = document.createElement('div');
-                div.className = 'log-item';
-                
-                const formattedCost = new Intl.NumberFormat('ru-RU').format(item.cost);
+                // Текст "Удалить" теперь лежит под низом
+                wrapper.innerHTML = `<div class="swipe-delete-text" onclick="deleteLogConfirm(${log.id})">Удалить</div>`;
 
-                div.innerHTML = `
-                    <div class="log-header">
-                        <span class="log-date">${item.date}</span>
-                        <span class="log-km">${item.mileage} км</span>
+                const el = document.createElement('div');
+                el.className = 'log-item';
+                el.onclick = () => startEdit(log.id);
+                
+                el.innerHTML = `
+                    <div class="log-top">
+                        <span class="log-date">${log.date}</span>
+                        <span style="font-weight:bold;">${log.mileage} км</span>
                     </div>
-                    <div class="log-title">${item.title}</div>
-                    <div class="log-details">${item.category} ${item.notes ? '• ' + item.notes : ''}</div>
-                    <div class="log-cost">${formattedCost} ₽</div>
-                    <button class="delete-btn" onclick="deleteRecord(${item.id})">Удалить</button>
+                    <div class="log-part">${log.title}</div>
+                    <div class="log-details">${log.category} ${log.notes ? '• '+log.notes : ''}</div>
+                    <span class="log-cost">${new Intl.NumberFormat('ru-RU').format(log.cost)} ₽</span>
                 `;
-                list.appendChild(div);
+                
+                enableSwipe(el);
+                wrapper.appendChild(el);
+                container.appendChild(wrapper);
             });
+            document.getElementById('total-spent').innerText = `Всего: ${new Intl.NumberFormat('ru-RU').format(total)} ₽`;
+        }
 
-            totalEl.innerText = new Intl.NumberFormat('ru-RU').format(totalSum) + ' ₽';
+        function enableSwipe(element) {
+            let startX = 0;
+            element.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX, {passive: true});
+            element.addEventListener('touchend', e => {
+                if (e.changedTouches[0].screenX + 50 < startX) {
+                    document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
+                    element.classList.add('swiped');
+                } else if (e.changedTouches[0].screenX > startX + 50) {
+                    element.classList.remove('swiped');
+                }
+            }, {passive: true});
+        }
+        
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.log-item-wrapper')) {
+                 document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
+            }
+        });
+
+        function deleteLogConfirm(id) {
+             tg.showConfirm("Удалить?", function(ok) {
+                if (ok) {
+                    logs = logs.filter(l => l.id !== id);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+                    renderLogs();
+                } else {
+                    renderLogs();
+                }
+            });
         }
     </script>
 </body>
