@@ -2,32 +2,41 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Kia Cerato 1 Log</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #1c1c1e);
+            --bg-color: var(--tg-theme-bg-color, #000000);
             --text-color: var(--tg-theme-text-color, #ffffff);
-            --hint-color: var(--tg-theme-hint-color, #999999);
-            --link-color: var(--tg-theme-link-color, #2481cc);
-            --button-color: var(--tg-theme-button-color, #2481cc);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #2c2c2e);
-            --kia-red: #d32f2f;
-            --delete-color: #ff3b30;
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --link-color: var(--tg-theme-link-color, #0a84ff);
+            --button-color: var(--tg-theme-button-color, #0a84ff);
+            --secondary-bg: var(--tg-theme-secondary-bg-color, #1c1c1e);
+            --kia-red: #ff3b30; /* Цвет как в iOS ошибках */
+            --delete-color: #ff453a;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            /* Используем системные шрифты Apple */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden; /* Запрет скролла всей страницы */
+            /* Запрет пружинящего эффекта на iOS */
+            overscroll-behavior: none;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, Helvetica, sans-serif;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            /* Учет верхнего отступа (челки) */
+            padding-top: env(safe-area-inset-top);
         }
 
         .content {
@@ -35,13 +44,17 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 20px;
-            padding-bottom: 100px;
+            /* Большой отступ снизу, чтобы контент не заезжал за таббар и safe area */
+            padding-bottom: calc(90px + env(safe-area-inset-bottom));
+            /* Разрешаем скролл внутри контента, но без передачи на body */
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
         }
 
-        h1 { margin: 0 0 5px 0; font-size: 24px; font-weight: 700; }
-        .subtitle { color: var(--hint-color); font-size: 14px; margin-bottom: 20px; }
+        h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 700; letter-spacing: 0.3px; }
+        .subtitle { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; }
 
-        /* Ввод данных */
+        /* Ввод данных - стиль iOS карточек */
         .input-card {
             background-color: var(--secondary-bg);
             border-radius: 12px;
@@ -50,77 +63,102 @@
         }
 
         .input-row {
-            border-bottom: 1px solid var(--bg-color);
+            border-bottom: 0.5px solid rgba(128, 128, 128, 0.2); /* Тонкий разделитель */
             padding: 12px 0;
+            display: flex;
+            flex-direction: column;
         }
         .input-row:last-child { border-bottom: none; }
 
-        label { display: block; font-size: 12px; color: var(--hint-color); margin-bottom: 4px; }
-        input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; }
+        label { display: block; font-size: 13px; color: var(--hint-color); margin-bottom: 6px; }
+        /* Размер 17px предотвращает зум при вводе на iPhone */
+        input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; font-family: inherit;}
+        select { -webkit-appearance: none; } /* Убираем стандартную стрелку iOS */
 
-        /* История и Свайп */
+        /* История и Свайп (Исправленная версия) */
         .log-item-wrapper {
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border-radius: 12px;
             overflow: hidden;
-            background-color: var(--delete-color); /* Красный фон лежит под карточкой */
+            background-color: var(--delete-color); /* Красный фон ПОД карточкой */
         }
 
         .log-item {
             background-color: var(--secondary-bg);
-            padding: 14px;
+            padding: 16px;
             position: relative;
-            z-index: 10; /* Карточка всегда выше кнопки */
-            transition: transform 0.2s ease-out;
+            z-index: 10; /* Карточка ВЫШЕ красного фона */
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); /* Плавная анимация iOS */
             border-radius: 12px;
-            /* Важно: цвет фона должен быть непрозрачным */
-            box-shadow: 0 1px 0 rgba(0,0,0,0.05); 
         }
 
         .log-item.swiped {
-            transform: translateX(-80px); /* Сдвигаем карточку влево */
+            transform: translateX(-90px); /* Сдвиг влево */
         }
 
-        /* Текст "Удалить" теперь лежит ПОД карточкой */
+        /* Текст "Удалить" лежит ПОД карточкой */
         .swipe-delete-text {
             position: absolute;
             top: 0;
             right: 0;
-            width: 80px;
+            width: 90px;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 14px;
-            z-index: 1; /* Ниже карточки */
+            font-size: 15px;
+            z-index: 1;
         }
 
-        .log-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .log-top { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: baseline;}
         .log-date { font-size: 13px; color: var(--hint-color); }
-        .log-part { font-weight: 600; font-size: 17px; margin-bottom: 4px; line-height: 1.2; }
+        .log-part { font-weight: 600; font-size: 17px; margin-bottom: 4px; line-height: 1.3; }
         .log-details { font-size: 14px; color: var(--hint-color); }
-        .log-cost { color: var(--kia-red); font-weight: bold; margin-top: 6px; display: block; font-size: 15px;}
+        .log-cost { color: var(--kia-red); font-weight: 600; margin-top: 8px; display: block; font-size: 16px;}
 
-        /* Нижнее меню */
+        /* Экран "О программе" */
+        .about-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60%;
+            text-align: center;
+        }
+        .about-card-info {
+             background-color: var(--secondary-bg);
+             padding: 30px;
+             border-radius: 20px;
+             width: 80%;
+             max-width: 300px;
+        }
+        .ver-text { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .creator-text { font-size: 15px; color: var(--hint-color); }
+        .creator-name { color: var(--text-color); font-weight: 600; }
+
+
+        /* Нижнее меню с учетом Safe Area */
         .tab-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background-color: var(--secondary-bg);
+            background-color: rgba(28, 28, 30, 0.95); /* Полупрозрачный фон как в iOS */
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             display: flex; justify-content: space-around;
-            padding: 10px 0; padding-bottom: calc(15px + env(safe-area-inset-bottom));
-            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 10px;
+            /* Важно: отступ снизу для iPhone без кнопки Home */
+            padding-bottom: calc(5px + env(safe-area-inset-bottom));
+            border-top: 0.5px solid rgba(128, 128, 128, 0.2);
             z-index: 100;
         }
-        .tab-btn { background: none; border: none; color: var(--hint-color); font-size: 10px; display: flex; flex-direction: column; align-items: center; }
+        .tab-btn { background: none; border: none; color: var(--hint-color); font-size: 10px; display: flex; flex-direction: column; align-items: center; flex: 1; }
         .tab-btn.active { color: var(--button-color); }
-        .tab-icon { font-size: 24px; margin-bottom: 4px; }
+        .tab-icon { font-size: 22px; margin-bottom: 4px; }
         
-        /* Скрытые экраны */
-        .screen { display: none; }
-        .screen.active { display: block; animation: fade 0.2s; }
-        @keyframes fade { from{opacity:0} to{opacity:1}}
+        /* Анимация переключения экранов */
+        .screen { display: none; opacity: 0; transition: opacity 0.2s ease-in-out;}
+        .screen.active { display: block; opacity: 1; }
     </style>
 </head>
 <body>
@@ -143,6 +181,7 @@
                     <option value="Тормоза">Тормозная система</option>
                     <option value="Электрика">Электрика</option>
                     <option value="Кузов">Кузов / Салон</option>
+                    <option value="Шины">Шины / Диски</option>
                     <option value="Другое">Другое</option>
                 </select>
             </div>
@@ -167,6 +206,16 @@
         <div id="logs-container"></div>
     </div>
 
+    <div id="screen-about" class="screen content">
+        <h1>О программе</h1>
+        <div class="about-container">
+            <div class="about-card-info">
+                <div class="ver-text">Версия 4.0 (iOS)</div>
+                <div class="creator-text">Создатель: <span class="creator-name">romerioyalta</span></div>
+            </div>
+        </div>
+    </div>
+
     <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('garage')">
             <span class="tab-icon">🛠</span>
@@ -176,11 +225,19 @@
             <span class="tab-icon">📋</span>
             <span>Архив</span>
         </button>
+        <button class="tab-btn" onclick="switchTab('about')">
+            <span class="tab-icon">ℹ️</span>
+            <span>Инфо</span>
+        </button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        // Устанавливаем цвет хедера под цвет фона для бесшовности
+        tg.setHeaderColor(tg.themeParams.bg_color);
+        tg.setBackgroundColor(tg.themeParams.bg_color);
+
         tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
         tg.MainButton.show();
         
@@ -188,9 +245,14 @@
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let editingId = null;
 
-        if (logs.length > 0) document.getElementById('inp-mileage').value = logs[0].mileage;
+        // Автоподстановка пробега
+        if (logs.length > 0) {
+             document.getElementById('inp-mileage').value = logs[0].mileage;
+        }
 
+        // --- ОБРАБОТЧИКИ ---
         tg.MainButton.onClick(() => {
+            // Если мы в архиве или в "о программе", кнопка перекидывает в гараж
             if (!document.getElementById('screen-garage').classList.contains('active')) {
                 switchTab('garage');
                 return;
@@ -199,36 +261,40 @@
         });
 
         function switchTab(tab) {
+            // Убираем активность со всех вкладок и кнопок
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
+            tg.HapticFeedback.selectionChanged(); // Легкая вибрация при переключении
+
             if (tab === 'garage') {
                 document.getElementById('screen-garage').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                if (editingId) {
-                    tg.MainButton.text = "СОХРАНИТЬ";
-                    tg.MainButton.color = "#34c759";
-                } else {
-                    tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
-                    tg.MainButton.color = tg.themeParams.button_color;
-                }
+                updateMainButtonState();
                 tg.MainButton.show();
-            } else {
+            } else if (tab === 'archive') {
                 exitEditMode();
                 document.getElementById('screen-archive').classList.add('active');
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                tg.MainButton.hide();
+                tg.MainButton.hide(); // В архиве кнопка не нужна
                 renderLogs();
+            } else if (tab === 'about') {
+                exitEditMode();
+                document.getElementById('screen-about').classList.add('active');
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                tg.MainButton.hide(); // В "о программе" кнопка не нужна
             }
         }
 
+        // --- ЛОГИКА СОХРАНЕНИЯ ---
         function saveRecord() {
             const mileage = document.getElementById('inp-mileage').value;
             const title = document.getElementById('inp-title').value;
             const costStr = document.getElementById('inp-cost').value;
             
             if (!mileage || !title) {
-                tg.showPopup({title: 'Ошибка', message: 'Введите пробег и название'});
+                tg.showPopup({title: 'Ошибка', message: 'Введите пробег и название работ'});
+                tg.HapticFeedback.notificationOccurred('error');
                 return;
             }
 
@@ -251,9 +317,11 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
             clearForm();
             exitEditMode();
-            tg.showPopup({message: 'Сохранено!'});
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showPopup({message: editingId ? 'Запись обновлена!' : 'Запись добавлена!'});
         }
 
+        // --- РЕДАКТИРОВАНИЕ ---
         window.startEdit = function(id) {
             const log = getLogById(id);
             if (!log) return;
@@ -263,15 +331,27 @@
             document.getElementById('inp-title').value = log.title;
             document.getElementById('inp-cost').value = log.cost;
             document.getElementById('inp-notes').value = log.notes;
-            document.getElementById('garage-subtitle').innerText = `Редактирование`;
+            document.getElementById('garage-subtitle').innerText = `Редактирование записи`;
             switchTab('garage');
         }
 
         function exitEditMode() {
             editingId = null;
             document.getElementById('garage-subtitle').innerText = "Новая запись";
-            tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
-            tg.MainButton.color = tg.themeParams.button_color;
+            updateMainButtonState();
+            if(!document.getElementById('inp-mileage').value && logs.length > 0) {
+                 document.getElementById('inp-mileage').value = logs[0].mileage;
+            }
+        }
+        
+        function updateMainButtonState() {
+             if (editingId) {
+                tg.MainButton.text = "СОХРАНИТЬ ИЗМЕНЕНИЯ";
+                tg.MainButton.color = "#34c759"; // Зеленый
+            } else {
+                tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
+                tg.MainButton.color = tg.themeParams.button_color; // Синий
+            }
         }
 
         function clearForm() {
@@ -282,13 +362,14 @@
         
         function getLogById(id) { return logs.find(l => l.id === id); }
 
+        // --- РЕНДЕРИНГ ИСТОРИИ И СВАЙПЫ ---
         function renderLogs() {
             const container = document.getElementById('logs-container');
             container.innerHTML = '';
             let total = 0;
 
             if (logs.length === 0) {
-                container.innerHTML = '<p style="text-align:center;color:gray;margin-top:20px;">Пока пусто</p>';
+                container.innerHTML = '<p style="text-align:center;color:var(--hint-color);margin-top:50px;font-size:15px;">История ремонтов пуста</p>';
                 document.getElementById('total-spent').innerText = 'Всего: 0 ₽';
                 return;
             }
@@ -298,7 +379,7 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'log-item-wrapper';
                 
-                // Текст "Удалить" теперь лежит под низом
+                // Текст "Удалить" лежит ПОД карточкой (z-index: 1)
                 wrapper.innerHTML = `<div class="swipe-delete-text" onclick="deleteLogConfirm(${log.id})">Удалить</div>`;
 
                 const el = document.createElement('div');
@@ -308,7 +389,7 @@
                 el.innerHTML = `
                     <div class="log-top">
                         <span class="log-date">${log.date}</span>
-                        <span style="font-weight:bold;">${log.mileage} км</span>
+                        <span style="font-weight:600; font-size:15px;">${log.mileage} км</span>
                     </div>
                     <div class="log-part">${log.title}</div>
                     <div class="log-details">${log.category} ${log.notes ? '• '+log.notes : ''}</div>
@@ -322,19 +403,43 @@
             document.getElementById('total-spent').innerText = `Всего: ${new Intl.NumberFormat('ru-RU').format(total)} ₽`;
         }
 
+        // Логика свайпа (оптимизирована)
         function enableSwipe(element) {
             let startX = 0;
-            element.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX, {passive: true});
+            let isSwiping = false;
+
+            element.addEventListener('touchstart', e => {
+                startX = e.changedTouches[0].screenX;
+                isSwiping = true;
+            }, {passive: true});
+            
+            element.addEventListener('touchmove', e => {
+                 if(!isSwiping) return;
+                 const currentX = e.changedTouches[0].screenX;
+                 // Если начали тянуть влево, предотвращаем вертикальный скролл
+                 if (startX - currentX > 10) {
+                     e.preventDefault(); 
+                 }
+            }, {passive: false}); // passive: false важно для e.preventDefault()
+
             element.addEventListener('touchend', e => {
-                if (e.changedTouches[0].screenX + 50 < startX) {
+                isSwiping = false;
+                const endX = e.changedTouches[0].screenX;
+                const threshold = 60; // Чувствительность свайпа
+
+                if (endX + threshold < startX) {
+                    // Свайп влево -> Открыть
                     document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
                     element.classList.add('swiped');
-                } else if (e.changedTouches[0].screenX > startX + 50) {
+                    tg.HapticFeedback.impactOccurred('light');
+                } else if (endX > startX + threshold) {
+                    // Свайп вправо -> Закрыть
                     element.classList.remove('swiped');
                 }
             }, {passive: true});
         }
         
+        // Закрытие свайпа при клике в другое место
         document.addEventListener('click', e => {
             if (!e.target.closest('.log-item-wrapper')) {
                  document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
@@ -342,12 +447,15 @@
         });
 
         function deleteLogConfirm(id) {
-             tg.showConfirm("Удалить?", function(ok) {
+             // Используем нативный диалог Телеграм
+             tg.showConfirm("Удалить эту запись навсегда?", function(ok) {
                 if (ok) {
                     logs = logs.filter(l => l.id !== id);
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
                     renderLogs();
+                    tg.HapticFeedback.notificationOccurred('success');
                 } else {
+                    // Если отменили, закрываем свайп
                     renderLogs();
                 }
             });
