@@ -42,13 +42,32 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 20px;
-            /* Отступ снизу под меню (tab-bar) */
             padding-bottom: calc(90px + env(safe-area-inset-bottom));
             -webkit-overflow-scrolling: touch;
         }
 
-        h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 700; letter-spacing: 0.3px; }
-        .subtitle { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; }
+        /* Стили для нового заголовка с фото */
+        .app-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .app-header-image {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 1px solid rgba(128, 128, 128, 0.2);
+        }
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.3px; line-height: 1.2; }
+        .subtitle { color: var(--hint-color); font-size: 15px; margin: 0; }
+        .subtitle-archive { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; }
 
         /* Ввод */
         .input-card {
@@ -149,8 +168,13 @@
 <body>
 
     <div id="screen-garage" class="screen active content">
-        <h1 id="main-title">Kia Cerato 1</h1>
-        <div class="subtitle" id="garage-subtitle">Новая запись</div>
+        <div class="app-header">
+            <img src="https://i.ibb.co/d4XN8Jm/image-5.png" alt="Kia Cerato" class="app-header-image">
+            <div class="header-text">
+                <h1>Kia Cerato 1</h1>
+                <div class="subtitle" id="garage-subtitle">Новая запись</div>
+            </div>
+        </div>
 
         <div class="input-card">
             <div class="input-row">
@@ -191,7 +215,7 @@
 
     <div id="screen-archive" class="screen content">
         <h1>История ремонта</h1>
-        <div class="subtitle" id="total-spent">Всего: 0 ₽</div>
+        <div class="subtitle-archive" id="total-spent">Всего: 0 ₽</div>
         <div id="logs-container"></div>
     </div>
 
@@ -199,7 +223,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 6.0</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 6.1</div>
                 <div style="color:var(--hint-color); font-size:15px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -231,9 +255,6 @@
 
         tg.setHeaderColor(themeBg);
         tg.setBackgroundColor(themeBg);
-        
-        // ВАЖНО: Мы больше не вызываем tg.MainButton.show()
-        // Нижней кнопки больше не будет.
         
         const STORAGE_KEY = 'kia_tg_log_v2';
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
