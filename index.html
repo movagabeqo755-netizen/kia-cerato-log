@@ -42,7 +42,8 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 20px;
-            padding-bottom: calc(120px + env(safe-area-inset-bottom));
+            /* Отступ снизу под меню (tab-bar) */
+            padding-bottom: calc(90px + env(safe-area-inset-bottom));
             -webkit-overflow-scrolling: touch;
         }
 
@@ -69,7 +70,7 @@
         input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; font-family: inherit;}
         select { -webkit-appearance: none; }
 
-        /* Кнопка на странице */
+        /* Кнопка на странице (ГЛАВНАЯ) */
         .page-save-btn {
             width: 100%;
             background-color: var(--button-color);
@@ -82,6 +83,9 @@
             cursor: pointer;
             margin-top: 10px;
             transition: opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .page-save-btn:active { opacity: 0.8; }
 
@@ -101,7 +105,7 @@
             z-index: 10;
             transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
             border-radius: 12px;
-            will-change: transform; /* Оптимизация для браузеров */
+            will-change: transform;
         }
 
         .log-item.swiped { transform: translateX(-90px); }
@@ -195,7 +199,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 5.0 Final</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 6.0</div>
                 <div style="color:var(--hint-color); font-size:15px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -227,24 +231,15 @@
 
         tg.setHeaderColor(themeBg);
         tg.setBackgroundColor(themeBg);
-
-        tg.MainButton.text = "СОХРАНИТЬ";
-        tg.MainButton.color = themeButton;
-        tg.MainButton.show();
+        
+        // ВАЖНО: Мы больше не вызываем tg.MainButton.show()
+        // Нижней кнопки больше не будет.
         
         const STORAGE_KEY = 'kia_tg_log_v2';
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let editingId = null;
 
         if (logs.length > 0) document.getElementById('inp-mileage').value = logs[0].mileage;
-
-        tg.MainButton.onClick(() => {
-            if (!document.getElementById('screen-garage').classList.contains('active')) {
-                switchTab('garage');
-                return;
-            }
-            saveRecord();
-        });
 
         function switchTab(tab) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
@@ -255,7 +250,6 @@
                 document.getElementById('screen-garage').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 updateButtonsState();
-                tg.MainButton.show();
             } else {
                 exitEditMode();
                 if(tab === 'archive') {
@@ -266,7 +260,6 @@
                     document.getElementById('screen-about').classList.add('active');
                     document.querySelectorAll('.tab-btn')[2].classList.add('active');
                 }
-                tg.MainButton.hide();
             }
         }
 
@@ -307,15 +300,11 @@
         function updateButtonsState() {
             const btn = document.getElementById('visible-save-btn');
             if (editingId) {
-                tg.MainButton.text = "СОХРАНИТЬ ИЗМЕНЕНИЯ";
-                tg.MainButton.color = "#34c759";
                 btn.innerText = "СОХРАНИТЬ ИЗМЕНЕНИЯ";
-                btn.style.backgroundColor = "#34c759";
+                btn.style.backgroundColor = "#34c759"; // Зеленый
             } else {
-                tg.MainButton.text = "ДОБАВИТЬ ЗАПИСЬ";
-                tg.MainButton.color = themeButton;
-                btn.innerText = "ДОБАВИТЬ ЗАПИСЬ";
-                btn.style.backgroundColor = themeButton;
+                btn.innerText = "СОХРАНИТЬ ЗАПИСЬ";
+                btn.style.backgroundColor = themeButton; // Синий
             }
         }
 
@@ -387,7 +376,6 @@
             document.getElementById('total-spent').innerText = `Всего: ${new Intl.NumberFormat('ru-RU').format(total)} ₽`;
         }
 
-        // --- УЛУЧШЕННЫЙ СВАЙП ---
         function enableSwipe(element) {
             let startX = 0;
             let startY = 0;
@@ -405,29 +393,25 @@
                  const diffX = startX - currentX;
                  const diffY = startY - currentY;
 
-                 // Магия: если движение по горизонтали БОЛЬШЕ, чем по вертикали -> это свайп.
-                 // Блокируем скролл страницы.
                  if (Math.abs(diffX) > Math.abs(diffY)) {
                      isSwiping = true;
-                     if(Math.abs(diffX) > 5) { // Небольшой порог для точности
+                     if(Math.abs(diffX) > 5) { 
                         e.preventDefault(); 
                      }
                  }
-            }, {passive: false}); // passive: false ОБЯЗАТЕЛЬНО для работы preventDefault
+            }, {passive: false});
 
             element.addEventListener('touchend', e => {
-                if (!isSwiping) return; // Если это был просто скролл, не реагируем
+                if (!isSwiping) return; 
                 
                 const endX = e.changedTouches[0].screenX;
-                const threshold = 60; // Насколько сильно нужно свайпнуть
+                const threshold = 60;
 
                 if (endX + threshold < startX) {
-                    // Свайп влево
                     document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
                     element.classList.add('swiped');
                     tg.HapticFeedback.impactOccurred('light');
                 } else if (endX > startX - threshold) {
-                    // Свайп вправо (или отмена)
                     element.classList.remove('swiped');
                 }
             }, {passive: true});
@@ -438,7 +422,6 @@
         });
 
         function deleteLogConfirm(id) {
-             // Проверка окружения (Телеграм или Браузер)
              if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
                  tg.showConfirm("Удалить запись?", function(ok) {
                     if (ok) {
@@ -449,7 +432,6 @@
                     } else renderLogs();
                 });
              } else {
-                 // Обычный браузер
                  if(confirm("Удалить запись навсегда?")) {
                     logs = logs.filter(l => l.id !== id);
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
