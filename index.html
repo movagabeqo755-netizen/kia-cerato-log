@@ -42,7 +42,6 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 20px;
-            /* Отступ снизу, чтобы контент не перекрывался меню и кнопкой */
             padding-bottom: calc(120px + env(safe-area-inset-bottom));
             -webkit-overflow-scrolling: touch;
         }
@@ -50,7 +49,7 @@
         h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 700; letter-spacing: 0.3px; }
         .subtitle { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; }
 
-        /* Карточка ввода */
+        /* Ввод */
         .input-card {
             background-color: var(--secondary-bg);
             border-radius: 12px;
@@ -70,7 +69,7 @@
         input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; font-family: inherit;}
         select { -webkit-appearance: none; }
 
-        /* Кнопка сохранения ВНУТРИ страницы */
+        /* Кнопка на странице */
         .page-save-btn {
             width: 100%;
             background-color: var(--button-color);
@@ -102,6 +101,7 @@
             z-index: 10;
             transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
             border-radius: 12px;
+            will-change: transform; /* Оптимизация для браузеров */
         }
 
         .log-item.swiped { transform: translateX(-90px); }
@@ -195,7 +195,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 4.2</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 5.0 Final</div>
                 <div style="color:var(--hint-color); font-size:15px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -387,18 +387,47 @@
             document.getElementById('total-spent').innerText = `Всего: ${new Intl.NumberFormat('ru-RU').format(total)} ₽`;
         }
 
+        // --- УЛУЧШЕННЫЙ СВАЙП ---
         function enableSwipe(element) {
             let startX = 0;
+            let startY = 0;
             let isSwiping = false;
-            element.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; isSwiping = true; }, {passive: true});
-            element.addEventListener('touchmove', e => { if(!isSwiping) return; if (startX - e.changedTouches[0].screenX > 10) e.preventDefault(); }, {passive: false});
-            element.addEventListener('touchend', e => {
+
+            element.addEventListener('touchstart', e => {
+                startX = e.changedTouches[0].screenX;
+                startY = e.changedTouches[0].screenY;
                 isSwiping = false;
-                if (e.changedTouches[0].screenX + 60 < startX) {
+            }, {passive: true});
+            
+            element.addEventListener('touchmove', e => {
+                 const currentX = e.changedTouches[0].screenX;
+                 const currentY = e.changedTouches[0].screenY;
+                 const diffX = startX - currentX;
+                 const diffY = startY - currentY;
+
+                 // Магия: если движение по горизонтали БОЛЬШЕ, чем по вертикали -> это свайп.
+                 // Блокируем скролл страницы.
+                 if (Math.abs(diffX) > Math.abs(diffY)) {
+                     isSwiping = true;
+                     if(Math.abs(diffX) > 5) { // Небольшой порог для точности
+                        e.preventDefault(); 
+                     }
+                 }
+            }, {passive: false}); // passive: false ОБЯЗАТЕЛЬНО для работы preventDefault
+
+            element.addEventListener('touchend', e => {
+                if (!isSwiping) return; // Если это был просто скролл, не реагируем
+                
+                const endX = e.changedTouches[0].screenX;
+                const threshold = 60; // Насколько сильно нужно свайпнуть
+
+                if (endX + threshold < startX) {
+                    // Свайп влево
                     document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
                     element.classList.add('swiped');
                     tg.HapticFeedback.impactOccurred('light');
-                } else if (e.changedTouches[0].screenX > startX + 60) {
+                } else if (endX > startX - threshold) {
+                    // Свайп вправо (или отмена)
                     element.classList.remove('swiped');
                 }
             }, {passive: true});
@@ -409,14 +438,24 @@
         });
 
         function deleteLogConfirm(id) {
-             tg.showConfirm("Удалить запись?", function(ok) {
-                if (ok) {
+             // Проверка окружения (Телеграм или Браузер)
+             if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
+                 tg.showConfirm("Удалить запись?", function(ok) {
+                    if (ok) {
+                        logs = logs.filter(l => l.id !== id);
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+                        renderLogs();
+                        tg.HapticFeedback.notificationOccurred('success');
+                    } else renderLogs();
+                });
+             } else {
+                 // Обычный браузер
+                 if(confirm("Удалить запись навсегда?")) {
                     logs = logs.filter(l => l.id !== id);
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
                     renderLogs();
-                    tg.HapticFeedback.notificationOccurred('success');
-                } else renderLogs();
-            });
+                 } else renderLogs();
+             }
         }
     </script>
 </body>
