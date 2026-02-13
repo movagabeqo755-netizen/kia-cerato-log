@@ -105,6 +105,7 @@
             position: relative;
             overflow: hidden;
             cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .oil-header {
             display: flex;
@@ -242,7 +243,7 @@
 
         <div class="oil-widget" onclick="editOilSettings()">
             <div class="oil-header">
-                <span class="oil-title">Замена масла</span>
+                <span class="oil-title">Замена масла (Настройка)</span>
                 <span class="oil-icon">⚙️</span>
             </div>
             <div class="oil-info">
@@ -252,7 +253,7 @@
                 </div>
                 <div>
                      <div class="oil-target" id="oil-next-text">След: -- км</div>
-                     <div class="oil-last-km" id="oil-last-text">Посл: -- км</div>
+                     <div class="oil-last-km" id="oil-last-text">Замена: -- км</div>
                 </div>
             </div>
             <div class="oil-progress-bg">
@@ -305,7 +306,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 10.0</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 11.0</div>
                 <div style="color:var(--hint-color); font-size:15px; margin-bottom:20px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -333,7 +334,7 @@
         
         const STORAGE_KEY = 'kia_tg_log_v2';
         const PLATE_KEY = 'kia_plate_number';
-        const OIL_KEY = 'kia_oil_config_v2';
+        const OIL_KEY = 'kia_oil_config_v3'; // Обновили ключ
 
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let oilConfig = JSON.parse(localStorage.getItem(OIL_KEY)) || { lastKm: 0, interval: 7000 };
@@ -371,7 +372,6 @@
             const mileage = document.getElementById('inp-mileage').value;
             const title = document.getElementById('inp-title').value;
             const costStr = document.getElementById('inp-cost').value;
-            const category = document.getElementById('inp-category').value;
             
             if (!mileage || !title) {
                 tg.showPopup({title: 'Ошибка', message: 'Заполните пробег и название работ'});
@@ -382,42 +382,28 @@
                 id: editingId || Date.now(),
                 date: editingId ? getLogById(editingId).date : new Date().toLocaleDateString('ru-RU'),
                 mileage: mileage,
-                category: category,
+                category: document.getElementById('inp-category').value,
                 title: title,
                 cost: costStr ? parseInt(costStr.replace(/\D/g,'')) : 0,
                 notes: document.getElementById('inp-notes').value
             };
 
-            // Умное обновление масла
-            if (!editingId && category.startsWith("ТО")) {
-                tg.showConfirm(`Это замена масла на ${mileage} км? Обновить счетчик?`, function(ok) {
-                    if (ok) {
-                        oilConfig.lastKm = parseInt(mileage);
-                        localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
-                        updateOilWidget();
-                    }
-                    finalizeSave(recordData);
-                });
-            } else {
-                finalizeSave(recordData);
-            }
-        }
-
-        function finalizeSave(recordData) {
             if (editingId) {
                 logs = logs.map(l => l.id === editingId ? recordData : l);
             } else {
                 logs.unshift(recordData);
             }
+
             localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
             clearForm();
             exitEditMode();
             tg.HapticFeedback.notificationOccurred('success');
             tg.showPopup({message: editingId ? 'Обновлено!' : 'Сохранено!'});
-            updateOilWidget();
+            
+            updateOilWidget(); 
         }
 
-        // --- ЛОГИКА МАСЛА (ОБНОВЛЕННАЯ) ---
+        // --- ЛОГИКА МАСЛА (РУЧНАЯ) ---
         function updateOilWidget() {
             const currentKm = logs.length > 0 ? parseInt(logs[0].mileage) : 0;
             const lastOilKm = parseInt(oilConfig.lastKm);
@@ -433,6 +419,8 @@
 
             const nextOilKm = lastOilKm + interval;
             const remaining = nextOilKm - currentKm;
+            
+            // Расчет полоски
             let percentLeft = (remaining / interval) * 100;
             if (percentLeft > 100) percentLeft = 100;
             if (percentLeft < 0) percentLeft = 0;
@@ -444,7 +432,7 @@
             bar.style.width = percentLeft + "%";
 
             if (remaining <= 0) {
-                document.getElementById('oil-remaining-text').innerText = "Пора менять!";
+                document.getElementById('oil-remaining-text').innerText = "Меняй!";
                 document.getElementById('oil-remaining-text').style.color = "var(--kia-red)";
             } else {
                 document.getElementById('oil-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
@@ -452,32 +440,28 @@
             }
             
             document.getElementById('oil-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextOilKm)} км`;
-            document.getElementById('oil-last-text').innerText = `Было: ${new Intl.NumberFormat('ru-RU').format(lastOilKm)} км`;
+            document.getElementById('oil-last-text').innerText = `Замена: ${new Intl.NumberFormat('ru-RU').format(lastOilKm)} км`;
         }
 
         function editOilSettings() {
-            // ШАГ 1: Пробег замены
-            // Используем стандартный prompt для простоты и надежности ввода чисел
-            const currentLast = oilConfig.lastKm || (logs.length > 0 ? logs[0].mileage : 0);
-            const newLast = prompt("ШАГ 1 из 2\nНа каком пробеге была последняя замена масла?", currentLast);
+            // ШАГ 1: Пробег замены (Полностью ручной ввод)
+            const newLast = prompt("ШАГ 1: На каком пробеге вы меняли масло? (Введите число)", oilConfig.lastKm || "");
             
-            if (newLast !== null) {
+            if (newLast !== null && newLast.trim() !== "") {
+                const l = parseInt(newLast.replace(/\D/g,''));
+                if (isNaN(l)) { alert("Нужно ввести число!"); return; }
+
                 // ШАГ 2: Интервал
-                const currentInt = oilConfig.interval || 7000;
-                const newInt = prompt("ШАГ 2 из 2\nЧерез сколько км менять масло?", currentInt);
+                const newInt = prompt("ШАГ 2: Через сколько км менять? (Введите число)", oilConfig.interval || "7000");
                 
-                if (newInt !== null) {
-                    const l = parseInt(newLast.replace(/\D/g,''));
+                if (newInt !== null && newInt.trim() !== "") {
                     const i = parseInt(newInt.replace(/\D/g,''));
-                    
-                    if (!isNaN(l) && !isNaN(i)) {
-                        oilConfig = { lastKm: l, interval: i };
-                        localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
-                        updateOilWidget();
-                        tg.HapticFeedback.notificationOccurred('success');
-                    } else {
-                        alert("Ошибка: введите числа");
-                    }
+                    if (isNaN(i)) { alert("Нужно ввести число!"); return; }
+
+                    oilConfig = { lastKm: l, interval: i };
+                    localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
+                    updateOilWidget();
+                    tg.HapticFeedback.notificationOccurred('success');
                 }
             }
         }
