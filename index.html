@@ -95,7 +95,7 @@
 
         .subtitle-archive { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; }
 
-        /* ВИДЖЕТ МАСЛА (НОВЫЙ) */
+        /* ВИДЖЕТ МАСЛА */
         .oil-widget {
             background-color: var(--secondary-bg);
             border-radius: 16px;
@@ -104,6 +104,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
         .oil-header {
             display: flex;
@@ -125,7 +126,6 @@
         .oil-left-label { font-size: 13px; color: var(--hint-color); margin-top: 4px; }
         .oil-target { font-size: 13px; color: var(--link-color); font-weight: 600; text-align: right; }
 
-        /* Прогресс бар масла */
         .oil-progress-bg {
             height: 6px;
             width: 100%;
@@ -135,10 +135,16 @@
         }
         .oil-progress-fill {
             height: 100%;
-            width: 50%;
+            width: 0%;
             background-color: var(--green-color);
             border-radius: 3px;
             transition: width 0.5s ease, background-color 0.5s ease;
+        }
+        .oil-last-km {
+            font-size: 11px;
+            color: var(--hint-color);
+            margin-top: 6px;
+            text-align: right;
         }
 
         /* Ввод */
@@ -236,15 +242,18 @@
 
         <div class="oil-widget" onclick="editOilSettings()">
             <div class="oil-header">
-                <span class="oil-title">Интервал замены масла</span>
-                <span class="oil-icon">💧</span>
+                <span class="oil-title">Замена масла</span>
+                <span class="oil-icon">⚙️</span>
             </div>
             <div class="oil-info">
                 <div>
                     <div class="oil-left-big" id="oil-remaining-text">--</div>
                     <div class="oil-left-label">осталось км</div>
                 </div>
-                <div class="oil-target" id="oil-next-text">След: -- км</div>
+                <div>
+                     <div class="oil-target" id="oil-next-text">След: -- км</div>
+                     <div class="oil-last-km" id="oil-last-text">Посл: -- км</div>
+                </div>
             </div>
             <div class="oil-progress-bg">
                 <div class="oil-progress-fill" id="oil-progress" style="width: 0%"></div>
@@ -296,7 +305,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 9.0</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 10.0</div>
                 <div style="color:var(--hint-color); font-size:15px; margin-bottom:20px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -324,7 +333,7 @@
         
         const STORAGE_KEY = 'kia_tg_log_v2';
         const PLATE_KEY = 'kia_plate_number';
-        const OIL_KEY = 'kia_oil_config_v1';
+        const OIL_KEY = 'kia_oil_config_v2';
 
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let oilConfig = JSON.parse(localStorage.getItem(OIL_KEY)) || { lastKm: 0, interval: 7000 };
@@ -344,7 +353,7 @@
                 document.getElementById('screen-garage').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 updateButtonsState();
-                updateOilWidget(); // Обновляем при входе
+                updateOilWidget();
             } else {
                 exitEditMode();
                 if(tab === 'archive') {
@@ -362,6 +371,7 @@
             const mileage = document.getElementById('inp-mileage').value;
             const title = document.getElementById('inp-title').value;
             const costStr = document.getElementById('inp-cost').value;
+            const category = document.getElementById('inp-category').value;
             
             if (!mileage || !title) {
                 tg.showPopup({title: 'Ошибка', message: 'Заполните пробег и название работ'});
@@ -372,107 +382,104 @@
                 id: editingId || Date.now(),
                 date: editingId ? getLogById(editingId).date : new Date().toLocaleDateString('ru-RU'),
                 mileage: mileage,
-                category: document.getElementById('inp-category').value,
+                category: category,
                 title: title,
                 cost: costStr ? parseInt(costStr.replace(/\D/g,'')) : 0,
                 notes: document.getElementById('inp-notes').value
             };
 
+            // Умное обновление масла
+            if (!editingId && category.startsWith("ТО")) {
+                tg.showConfirm(`Это замена масла на ${mileage} км? Обновить счетчик?`, function(ok) {
+                    if (ok) {
+                        oilConfig.lastKm = parseInt(mileage);
+                        localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
+                        updateOilWidget();
+                    }
+                    finalizeSave(recordData);
+                });
+            } else {
+                finalizeSave(recordData);
+            }
+        }
+
+        function finalizeSave(recordData) {
             if (editingId) {
                 logs = logs.map(l => l.id === editingId ? recordData : l);
             } else {
                 logs.unshift(recordData);
             }
-
             localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
             clearForm();
             exitEditMode();
             tg.HapticFeedback.notificationOccurred('success');
             tg.showPopup({message: editingId ? 'Обновлено!' : 'Сохранено!'});
-            
-            updateOilWidget(); // Пересчитываем масло после сохранения
+            updateOilWidget();
         }
 
-        // --- ЛОГИКА МАСЛА ---
+        // --- ЛОГИКА МАСЛА (ОБНОВЛЕННАЯ) ---
         function updateOilWidget() {
-            // Текущий пробег берем из последней записи в истории, или 0
             const currentKm = logs.length > 0 ? parseInt(logs[0].mileage) : 0;
             const lastOilKm = parseInt(oilConfig.lastKm);
             const interval = parseInt(oilConfig.interval);
             
             if (lastOilKm === 0) {
-                // Если не настроено
                 document.getElementById('oil-remaining-text').innerText = "Настроить";
-                document.getElementById('oil-next-text').innerText = "Нажми сюда";
+                document.getElementById('oil-next-text').innerText = "Жми сюда";
+                document.getElementById('oil-last-text').innerText = "";
                 document.getElementById('oil-progress').style.width = "0%";
                 return;
             }
 
             const nextOilKm = lastOilKm + interval;
             const remaining = nextOilKm - currentKm;
-            
-            // Прогресс бар (инвертированный: 0% = полно масла, 100% = пора менять)
-            // Но визуально заполняем: 100% ширины = свежее масло, 0% ширины = пора менять
             let percentLeft = (remaining / interval) * 100;
             if (percentLeft > 100) percentLeft = 100;
             if (percentLeft < 0) percentLeft = 0;
 
-            // Цвета
             const bar = document.getElementById('oil-progress');
-            if (percentLeft > 40) {
-                bar.style.backgroundColor = "var(--green-color)";
-            } else if (percentLeft > 15) {
-                bar.style.backgroundColor = "var(--yellow-color)";
-            } else {
-                bar.style.backgroundColor = "var(--kia-red)";
-            }
+            if (percentLeft > 40) bar.style.backgroundColor = "var(--green-color)";
+            else if (percentLeft > 15) bar.style.backgroundColor = "var(--yellow-color)";
+            else bar.style.backgroundColor = "var(--kia-red)";
             bar.style.width = percentLeft + "%";
 
-            // Текст
-            const formattedRemaining = new Intl.NumberFormat('ru-RU').format(remaining);
-            const formattedNext = new Intl.NumberFormat('ru-RU').format(nextOilKm);
-            
             if (remaining <= 0) {
                 document.getElementById('oil-remaining-text').innerText = "Пора менять!";
                 document.getElementById('oil-remaining-text').style.color = "var(--kia-red)";
             } else {
-                document.getElementById('oil-remaining-text').innerText = formattedRemaining;
+                document.getElementById('oil-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
                 document.getElementById('oil-remaining-text').style.color = "var(--text-color)";
             }
             
-            document.getElementById('oil-next-text').innerText = `След: ${formattedNext} км`;
+            document.getElementById('oil-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextOilKm)} км`;
+            document.getElementById('oil-last-text').innerText = `Было: ${new Intl.NumberFormat('ru-RU').format(lastOilKm)} км`;
         }
 
         function editOilSettings() {
-            tg.showPopup({
-                title: 'Настройки замены масла',
-                message: 'Введите через пробел: \n1. Пробег последней замены\n2. Интервал (например: 290000 7000)',
-                buttons: [{type: 'ok', id: 'save'}, {type: 'cancel'}]
-            }, function(btn) {
-                if (btn === 'save') {
-                    setTimeout(() => {
-                        const defaultVal = `${oilConfig.lastKm > 0 ? oilConfig.lastKm : ''} ${oilConfig.interval}`;
-                        const input = prompt("Пробег замены и интервал:", defaultVal.trim());
-                        
-                        if (input) {
-                            const parts = input.trim().split(/\s+/);
-                            if (parts.length >= 2) {
-                                const newLast = parseInt(parts[0]);
-                                const newInt = parseInt(parts[1]);
-                                
-                                if (!isNaN(newLast) && !isNaN(newInt)) {
-                                    oilConfig = { lastKm: newLast, interval: newInt };
-                                    localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
-                                    updateOilWidget();
-                                    tg.HapticFeedback.notificationOccurred('success');
-                                } else alert("Нужны числа!");
-                            } else {
-                                alert("Введите два числа через пробел!");
-                            }
-                        }
-                    }, 100);
+            // ШАГ 1: Пробег замены
+            // Используем стандартный prompt для простоты и надежности ввода чисел
+            const currentLast = oilConfig.lastKm || (logs.length > 0 ? logs[0].mileage : 0);
+            const newLast = prompt("ШАГ 1 из 2\nНа каком пробеге была последняя замена масла?", currentLast);
+            
+            if (newLast !== null) {
+                // ШАГ 2: Интервал
+                const currentInt = oilConfig.interval || 7000;
+                const newInt = prompt("ШАГ 2 из 2\nЧерез сколько км менять масло?", currentInt);
+                
+                if (newInt !== null) {
+                    const l = parseInt(newLast.replace(/\D/g,''));
+                    const i = parseInt(newInt.replace(/\D/g,''));
+                    
+                    if (!isNaN(l) && !isNaN(i)) {
+                        oilConfig = { lastKm: l, interval: i };
+                        localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
+                        updateOilWidget();
+                        tg.HapticFeedback.notificationOccurred('success');
+                    } else {
+                        alert("Ошибка: введите числа");
+                    }
                 }
-            });
+            }
         }
 
         // --- ОСТАЛЬНОЕ ---
