@@ -67,9 +67,17 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            flex: 1;
         }
 
-        h1 { margin: 0 0 6px 0; font-size: 26px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.1; }
+        h1 { margin: 0 0 8px 0; font-size: 24px; font-weight: 800; letter-spacing: 0.3px; line-height: 1.1; }
+
+        /* Блок с номером и пробегом */
+        .car-info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         /* Номерной знак */
         .license-plate {
@@ -82,16 +90,32 @@
             padding: 0;
             font-family: "Condensed", sans-serif;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
             cursor: pointer;
-            width: fit-content;
+            height: 28px;
         }
-        .plate-number { padding: 2px 6px; letter-spacing: 1px; font-size: 18px; text-transform: uppercase; }
-        .plate-region { border-left: 1px solid black; padding: 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
-        .region-code { font-size: 12px; margin-bottom: 1px; }
-        .plate-flag { display: flex; align-items: center; font-size: 8px; }
-        .flag-icon { font-size: 10px; margin-left: 1px; }
+        .plate-number { padding: 0 5px; letter-spacing: 1px; font-size: 16px; text-transform: uppercase; }
+        .plate-region { border-left: 1px solid black; padding: 0 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 0.9; height: 100%; }
+        .region-code { font-size: 10px; }
+        .plate-flag { display: flex; align-items: center; font-size: 6px; }
+
+        /* ОДОМЕТР (НОВОЕ) */
+        .odometer-badge {
+            background-color: var(--secondary-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            padding: 0 8px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        .odometer-icon { margin-right: 4px; font-size: 12px; color: var(--hint-color); }
 
         .subtitle-archive { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; }
 
@@ -231,19 +255,28 @@
             <img src="car.jpg" onerror="this.src='https://img.icons8.com/ios-filled/100/8e8e93/car.png'" alt="Kia" class="app-header-image">
             <div class="header-text">
                 <h1>Kia Cerato 1</h1>
-                <div class="license-plate" onclick="editPlate()">
-                    <div class="plate-number" id="plate-text">А 463 РН</div>
-                    <div class="plate-region">
-                        <div class="region-code" id="region-text">82</div>
-                        <div class="plate-flag">RUS <span class="flag-icon">🇷🇺</span></div>
+                
+                <div class="car-info-row">
+                    <div class="license-plate" onclick="editPlate()">
+                        <div class="plate-number" id="plate-text">А 463 РН</div>
+                        <div class="plate-region">
+                            <div class="region-code" id="region-text">82</div>
+                            <div class="plate-flag">RUS <span class="flag-icon">🇷🇺</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="odometer-badge" onclick="editOdometer()">
+                        <span class="odometer-icon">km</span>
+                        <span id="header-odometer">295 000</span>
                     </div>
                 </div>
+                
             </div>
         </div>
 
         <div class="oil-widget" onclick="editOilSettings()">
             <div class="oil-header">
-                <span class="oil-title">Замена масла (Настройка)</span>
+                <span class="oil-title">До замены масла</span>
                 <span class="oil-icon">⚙️</span>
             </div>
             <div class="oil-info">
@@ -264,7 +297,7 @@
         <div class="input-card">
             <div class="input-row">
                 <label>Пробег (км)</label>
-                <input type="number" id="inp-mileage" placeholder="Например: 295000">
+                <input type="number" id="inp-mileage" placeholder="295000">
             </div>
             <div class="input-row">
                 <label>Категория</label>
@@ -306,7 +339,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 11.0</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 12.0</div>
                 <div style="color:var(--hint-color); font-size:15px; margin-bottom:20px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -334,16 +367,19 @@
         
         const STORAGE_KEY = 'kia_tg_log_v2';
         const PLATE_KEY = 'kia_plate_number';
-        const OIL_KEY = 'kia_oil_config_v3'; // Обновили ключ
+        const OIL_KEY = 'kia_oil_config_v3';
+        const ODO_KEY = 'kia_current_odometer'; // Новый ключ для одометра
 
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let oilConfig = JSON.parse(localStorage.getItem(OIL_KEY)) || { lastKm: 0, interval: 7000 };
+        let currentOdometer = parseInt(localStorage.getItem(ODO_KEY)) || (logs.length > 0 ? parseInt(logs[0].mileage) : 0);
         let editingId = null;
 
         // Инициализация
-        if (logs.length > 0) document.getElementById('inp-mileage').value = logs[0].mileage;
         loadPlate();
+        updateOdometerDisplay();
         updateOilWidget();
+        document.getElementById('inp-mileage').value = currentOdometer;
 
         function switchTab(tab) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
@@ -355,6 +391,10 @@
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 updateButtonsState();
                 updateOilWidget();
+                // При входе в гараж обновляем поле ввода из текущего одометра, если оно пустое или старое
+                if (!editingId) {
+                     document.getElementById('inp-mileage').value = currentOdometer;
+                }
             } else {
                 exitEditMode();
                 if(tab === 'archive') {
@@ -394,6 +434,13 @@
                 logs.unshift(recordData);
             }
 
+            // Обновляем общий одометр, если введенный пробег больше текущего
+            if (parseInt(mileage) > currentOdometer) {
+                currentOdometer = parseInt(mileage);
+                localStorage.setItem(ODO_KEY, currentOdometer);
+                updateOdometerDisplay();
+            }
+
             localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
             clearForm();
             exitEditMode();
@@ -403,9 +450,9 @@
             updateOilWidget(); 
         }
 
-        // --- ЛОГИКА МАСЛА (РУЧНАЯ) ---
+        // --- ЛОГИКА МАСЛА (СВЯЗАНА С ОДОМЕТРОМ) ---
         function updateOilWidget() {
-            const currentKm = logs.length > 0 ? parseInt(logs[0].mileage) : 0;
+            // Теперь используем currentOdometer вместо logs[0]
             const lastOilKm = parseInt(oilConfig.lastKm);
             const interval = parseInt(oilConfig.interval);
             
@@ -418,7 +465,7 @@
             }
 
             const nextOilKm = lastOilKm + interval;
-            const remaining = nextOilKm - currentKm;
+            const remaining = nextOilKm - currentOdometer;
             
             // Расчет полоски
             let percentLeft = (remaining / interval) * 100;
@@ -432,6 +479,7 @@
             bar.style.width = percentLeft + "%";
 
             if (remaining <= 0) {
+                // Если перепробег
                 document.getElementById('oil-remaining-text').innerText = "Меняй!";
                 document.getElementById('oil-remaining-text').style.color = "var(--kia-red)";
             } else {
@@ -444,14 +492,12 @@
         }
 
         function editOilSettings() {
-            // ШАГ 1: Пробег замены (Полностью ручной ввод)
             const newLast = prompt("ШАГ 1: На каком пробеге вы меняли масло? (Введите число)", oilConfig.lastKm || "");
             
             if (newLast !== null && newLast.trim() !== "") {
                 const l = parseInt(newLast.replace(/\D/g,''));
                 if (isNaN(l)) { alert("Нужно ввести число!"); return; }
 
-                // ШАГ 2: Интервал
                 const newInt = prompt("ШАГ 2: Через сколько км менять? (Введите число)", oilConfig.interval || "7000");
                 
                 if (newInt !== null && newInt.trim() !== "") {
@@ -464,6 +510,26 @@
                     tg.HapticFeedback.notificationOccurred('success');
                 }
             }
+        }
+
+        // --- ЛОГИКА ОДОМЕТРА (НОВАЯ) ---
+        function updateOdometerDisplay() {
+            document.getElementById('header-odometer').innerText = new Intl.NumberFormat('ru-RU').format(currentOdometer);
+        }
+
+        function editOdometer() {
+             const newVal = prompt("Введите текущий реальный пробег автомобиля:", currentOdometer);
+             if (newVal !== null && newVal.trim() !== "") {
+                 const parsed = parseInt(newVal.replace(/\D/g,''));
+                 if (!isNaN(parsed)) {
+                     currentOdometer = parsed;
+                     localStorage.setItem(ODO_KEY, currentOdometer);
+                     updateOdometerDisplay();
+                     updateOilWidget(); // Сразу пересчитываем масло
+                     document.getElementById('inp-mileage').value = currentOdometer; // И поле ввода
+                     tg.HapticFeedback.notificationOccurred('success');
+                 }
+             }
         }
 
         // --- ОСТАЛЬНОЕ ---
@@ -491,8 +557,8 @@
         function exitEditMode() {
             editingId = null;
             updateButtonsState();
-            if(!document.getElementById('inp-mileage').value && logs.length > 0) {
-                 document.getElementById('inp-mileage').value = logs[0].mileage;
+            if(!document.getElementById('inp-mileage').value) {
+                 document.getElementById('inp-mileage').value = currentOdometer;
             }
         }
         function clearForm() {
