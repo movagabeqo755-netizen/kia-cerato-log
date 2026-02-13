@@ -16,7 +16,8 @@
             --secondary-bg: var(--tg-theme-secondary-bg-color, #1c1c1e);
             --kia-red: #ff3b30;
             --delete-color: #ff453a;
-            --green-color: #34c759;
+            --green-color: #32d74b;
+            --yellow-color: #ffd60a;
         }
 
         html, body {
@@ -51,7 +52,7 @@
         .app-header {
             display: flex;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .app-header-image {
             width: 70px;
@@ -94,6 +95,52 @@
 
         .subtitle-archive { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; }
 
+        /* ВИДЖЕТ МАСЛА (НОВЫЙ) */
+        .oil-widget {
+            background-color: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .oil-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .oil-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--hint-color);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .oil-icon { font-size: 18px; }
+        
+        .oil-info { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
+        .oil-left-big { font-size: 28px; font-weight: 800; color: var(--text-color); line-height: 1; }
+        .oil-left-label { font-size: 13px; color: var(--hint-color); margin-top: 4px; }
+        .oil-target { font-size: 13px; color: var(--link-color); font-weight: 600; text-align: right; }
+
+        /* Прогресс бар масла */
+        .oil-progress-bg {
+            height: 6px;
+            width: 100%;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .oil-progress-fill {
+            height: 100%;
+            width: 50%;
+            background-color: var(--green-color);
+            border-radius: 3px;
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
+
         /* Ввод */
         .input-card {
             background-color: var(--secondary-bg);
@@ -131,19 +178,8 @@
         }
         .page-save-btn:active { opacity: 0.8; }
 
-        /* Кнопки Бэкапа */
-        .backup-btn {
-            background-color: var(--secondary-bg);
-            color: var(--link-color);
-            margin-top: 15px;
-            border: 1px solid var(--link-color);
-        }
-        .restore-btn {
-            background-color: var(--secondary-bg);
-            color: var(--kia-red);
-            margin-top: 10px;
-            border: 1px solid var(--kia-red);
-        }
+        .backup-btn { background-color: var(--secondary-bg); color: var(--link-color); margin-top: 15px; border: 1px solid var(--link-color); }
+        .restore-btn { background-color: var(--secondary-bg); color: var(--kia-red); margin-top: 10px; border: 1px solid var(--kia-red); }
 
         /* История */
         .log-item-wrapper { position: relative; margin-bottom: 12px; border-radius: 12px; overflow: hidden; background-color: var(--delete-color); }
@@ -198,6 +234,23 @@
             </div>
         </div>
 
+        <div class="oil-widget" onclick="editOilSettings()">
+            <div class="oil-header">
+                <span class="oil-title">Интервал замены масла</span>
+                <span class="oil-icon">💧</span>
+            </div>
+            <div class="oil-info">
+                <div>
+                    <div class="oil-left-big" id="oil-remaining-text">--</div>
+                    <div class="oil-left-label">осталось км</div>
+                </div>
+                <div class="oil-target" id="oil-next-text">След: -- км</div>
+            </div>
+            <div class="oil-progress-bg">
+                <div class="oil-progress-fill" id="oil-progress" style="width: 0%"></div>
+            </div>
+        </div>
+
         <div class="input-card">
             <div class="input-row">
                 <label>Пробег (км)</label>
@@ -243,25 +296,14 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 8.0</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 9.0</div>
                 <div style="color:var(--hint-color); font-size:15px; margin-bottom:20px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
-                
                 <hr style="border:0; border-top:1px solid rgba(128,128,128,0.2); margin: 15px 0;">
-
-                <button class="page-save-btn backup-btn" onclick="exportData()">
-                    📤 Скопировать базу данных
-                </button>
-                
-                <button class="page-save-btn restore-btn" onclick="importData()">
-                    📥 Восстановить из копии
-                </button>
-                
-                <p class="warning-text">
-                    Внимание! При удалении Телеграма данные исчезнут. <br>
-                    Периодически нажимайте "Скопировать" и сохраняйте код в "Избранное".
-                </p>
+                <button class="page-save-btn backup-btn" onclick="exportData()">📤 Скопировать базу данных</button>
+                <button class="page-save-btn restore-btn" onclick="importData()">📥 Восстановить из копии</button>
+                <p class="warning-text">Внимание! При удалении Телеграма данные исчезнут. Сохраняйте копию.</p>
             </div>
         </div>
     </div>
@@ -282,11 +324,16 @@
         
         const STORAGE_KEY = 'kia_tg_log_v2';
         const PLATE_KEY = 'kia_plate_number';
+        const OIL_KEY = 'kia_oil_config_v1';
+
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        let oilConfig = JSON.parse(localStorage.getItem(OIL_KEY)) || { lastKm: 0, interval: 7000 };
         let editingId = null;
 
+        // Инициализация
         if (logs.length > 0) document.getElementById('inp-mileage').value = logs[0].mileage;
         loadPlate();
+        updateOilWidget();
 
         function switchTab(tab) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
@@ -297,6 +344,7 @@
                 document.getElementById('screen-garage').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 updateButtonsState();
+                updateOilWidget(); // Обновляем при входе
             } else {
                 exitEditMode();
                 if(tab === 'archive') {
@@ -341,8 +389,93 @@
             exitEditMode();
             tg.HapticFeedback.notificationOccurred('success');
             tg.showPopup({message: editingId ? 'Обновлено!' : 'Сохранено!'});
+            
+            updateOilWidget(); // Пересчитываем масло после сохранения
         }
 
+        // --- ЛОГИКА МАСЛА ---
+        function updateOilWidget() {
+            // Текущий пробег берем из последней записи в истории, или 0
+            const currentKm = logs.length > 0 ? parseInt(logs[0].mileage) : 0;
+            const lastOilKm = parseInt(oilConfig.lastKm);
+            const interval = parseInt(oilConfig.interval);
+            
+            if (lastOilKm === 0) {
+                // Если не настроено
+                document.getElementById('oil-remaining-text').innerText = "Настроить";
+                document.getElementById('oil-next-text').innerText = "Нажми сюда";
+                document.getElementById('oil-progress').style.width = "0%";
+                return;
+            }
+
+            const nextOilKm = lastOilKm + interval;
+            const remaining = nextOilKm - currentKm;
+            
+            // Прогресс бар (инвертированный: 0% = полно масла, 100% = пора менять)
+            // Но визуально заполняем: 100% ширины = свежее масло, 0% ширины = пора менять
+            let percentLeft = (remaining / interval) * 100;
+            if (percentLeft > 100) percentLeft = 100;
+            if (percentLeft < 0) percentLeft = 0;
+
+            // Цвета
+            const bar = document.getElementById('oil-progress');
+            if (percentLeft > 40) {
+                bar.style.backgroundColor = "var(--green-color)";
+            } else if (percentLeft > 15) {
+                bar.style.backgroundColor = "var(--yellow-color)";
+            } else {
+                bar.style.backgroundColor = "var(--kia-red)";
+            }
+            bar.style.width = percentLeft + "%";
+
+            // Текст
+            const formattedRemaining = new Intl.NumberFormat('ru-RU').format(remaining);
+            const formattedNext = new Intl.NumberFormat('ru-RU').format(nextOilKm);
+            
+            if (remaining <= 0) {
+                document.getElementById('oil-remaining-text').innerText = "Пора менять!";
+                document.getElementById('oil-remaining-text').style.color = "var(--kia-red)";
+            } else {
+                document.getElementById('oil-remaining-text').innerText = formattedRemaining;
+                document.getElementById('oil-remaining-text').style.color = "var(--text-color)";
+            }
+            
+            document.getElementById('oil-next-text').innerText = `След: ${formattedNext} км`;
+        }
+
+        function editOilSettings() {
+            tg.showPopup({
+                title: 'Настройки замены масла',
+                message: 'Введите через пробел: \n1. Пробег последней замены\n2. Интервал (например: 290000 7000)',
+                buttons: [{type: 'ok', id: 'save'}, {type: 'cancel'}]
+            }, function(btn) {
+                if (btn === 'save') {
+                    setTimeout(() => {
+                        const defaultVal = `${oilConfig.lastKm > 0 ? oilConfig.lastKm : ''} ${oilConfig.interval}`;
+                        const input = prompt("Пробег замены и интервал:", defaultVal.trim());
+                        
+                        if (input) {
+                            const parts = input.trim().split(/\s+/);
+                            if (parts.length >= 2) {
+                                const newLast = parseInt(parts[0]);
+                                const newInt = parseInt(parts[1]);
+                                
+                                if (!isNaN(newLast) && !isNaN(newInt)) {
+                                    oilConfig = { lastKm: newLast, interval: newInt };
+                                    localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
+                                    updateOilWidget();
+                                    tg.HapticFeedback.notificationOccurred('success');
+                                } else alert("Нужны числа!");
+                            } else {
+                                alert("Введите два числа через пробел!");
+                            }
+                        }
+                    }, 100);
+                }
+            });
+        }
+
+        // --- ОСТАЛЬНОЕ ---
         function updateButtonsState() {
             const btn = document.getElementById('visible-save-btn');
             if (editingId) {
@@ -353,7 +486,6 @@
                 btn.style.backgroundColor = themeButton;
             }
         }
-
         window.startEdit = function(id) {
             const log = getLogById(id);
             if (!log) return;
@@ -365,7 +497,6 @@
             document.getElementById('inp-notes').value = log.notes;
             switchTab('garage');
         }
-
         function exitEditMode() {
             editingId = null;
             updateButtonsState();
@@ -373,26 +504,21 @@
                  document.getElementById('inp-mileage').value = logs[0].mileage;
             }
         }
-
         function clearForm() {
             document.getElementById('inp-title').value = '';
             document.getElementById('inp-cost').value = '';
             document.getElementById('inp-notes').value = '';
         }
-        
         function getLogById(id) { return logs.find(l => l.id === id); }
-
         function renderLogs() {
             const container = document.getElementById('logs-container');
             container.innerHTML = '';
             let total = 0;
-
             if (logs.length === 0) {
                 container.innerHTML = '<p style="text-align:center;color:gray;margin-top:40px;">История пуста</p>';
                 document.getElementById('total-spent').innerText = 'Всего: 0 ₽';
                 return;
             }
-
             logs.forEach(log => {
                 total += log.cost;
                 const wrapper = document.createElement('div');
@@ -416,19 +542,13 @@
             });
             document.getElementById('total-spent').innerText = `Всего: ${new Intl.NumberFormat('ru-RU').format(total)} ₽`;
         }
-
         function enableSwipe(element) {
-            let startX = 0;
-            let startY = 0;
-            let isSwiping = false;
+            let startX = 0; let startY = 0; let isSwiping = false;
             element.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; startY = e.changedTouches[0].screenY; isSwiping = false; }, {passive: true});
             element.addEventListener('touchmove', e => {
                  const diffX = startX - e.changedTouches[0].screenX;
                  const diffY = startY - e.changedTouches[0].screenY;
-                 if (Math.abs(diffX) > Math.abs(diffY)) {
-                     isSwiping = true;
-                     if(Math.abs(diffX) > 5) e.preventDefault(); 
-                 }
+                 if (Math.abs(diffX) > Math.abs(diffY)) { isSwiping = true; if(Math.abs(diffX) > 5) e.preventDefault(); }
             }, {passive: false});
             element.addEventListener('touchend', e => {
                 if (!isSwiping) return; 
@@ -441,30 +561,14 @@
                 }
             }, {passive: true});
         }
-        
-        document.addEventListener('click', e => {
-            if (!e.target.closest('.log-item-wrapper')) document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
-        });
-
+        document.addEventListener('click', e => { if (!e.target.closest('.log-item-wrapper')) document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped')); });
         function deleteLogConfirm(id) {
              if (tg.initDataUnsafe && Object.keys(tg.initDataUnsafe).length > 0) {
-                 tg.showConfirm("Удалить запись?", function(ok) {
-                    if (ok) {
-                        logs = logs.filter(l => l.id !== id);
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-                        renderLogs();
-                        tg.HapticFeedback.notificationOccurred('success');
-                    } else renderLogs();
-                });
+                 tg.showConfirm("Удалить запись?", function(ok) { if (ok) { logs = logs.filter(l => l.id !== id); localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); renderLogs(); updateOilWidget(); tg.HapticFeedback.notificationOccurred('success'); } else renderLogs(); });
              } else {
-                 if(confirm("Удалить запись навсегда?")) {
-                    logs = logs.filter(l => l.id !== id);
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-                    renderLogs();
-                 } else renderLogs();
+                 if(confirm("Удалить запись навсегда?")) { logs = logs.filter(l => l.id !== id); localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); renderLogs(); updateOilWidget(); } else renderLogs();
              }
         }
-
         function loadPlate() {
             const savedPlate = localStorage.getItem(PLATE_KEY);
             if (savedPlate) {
@@ -475,13 +579,8 @@
                 }
             }
         }
-
         function editPlate() {
-            tg.showPopup({
-                title: 'Сменить госномер',
-                message: 'Введите номер и регион через пробел (например: А463РН 82)',
-                buttons: [{type: 'ok', id: 'save'}, {type: 'cancel'}]
-            }, function(btn) {
+            tg.showPopup({ title: 'Сменить госномер', message: 'Введите номер и регион через пробел (например: А463РН 82)', buttons: [{type: 'ok', id: 'save'}, {type: 'cancel'}] }, function(btn) {
                 if (btn === 'save') {
                     setTimeout(() => {
                         const input = prompt("Введите госномер (Например: А463РН 82):", document.getElementById('plate-text').innerText + " " + document.getElementById('region-text').innerText);
@@ -489,10 +588,8 @@
                             const clean = input.trim().toUpperCase();
                             const match = clean.match(/^(.+?)\s*(\d{2,3})$/); 
                             if (match) {
-                                const newNum = match[1].replace(/\s/g, '');
-                                const newReg = match[2];
-                                document.getElementById('plate-text').innerText = newNum;
-                                document.getElementById('region-text').innerText = newReg;
+                                const newNum = match[1].replace(/\s/g, ''); const newReg = match[2];
+                                document.getElementById('plate-text').innerText = newNum; document.getElementById('region-text').innerText = newReg;
                                 localStorage.setItem(PLATE_KEY, newNum + '|' + newReg);
                             } else alert("Неверный формат!");
                         }
@@ -500,65 +597,13 @@
                 }
             });
         }
-
-        // --- ФУНКЦИИ БЭКАПА ---
+        // Бэкап
         function exportData() {
             const data = JSON.stringify(logs);
-            // Копирование в буфер
-            navigator.clipboard.writeText(data).then(() => {
-                tg.showPopup({
-                    title: 'Скопировано!',
-                    message: 'База данных скопирована. Вставьте этот текст в "Избранное" в Telegram.'
-                });
-                tg.HapticFeedback.notificationOccurred('success');
-            }).catch(err => {
-                // Если не сработало автокопирование (ограничения браузера)
-                prompt("Скопируйте этот код вручную:", data);
-            });
+            navigator.clipboard.writeText(data).then(() => { tg.showPopup({ title: 'Скопировано!', message: 'Вставьте код в Избранное.' }); tg.HapticFeedback.notificationOccurred('success'); }).catch(err => { prompt("Скопируйте вручную:", data); });
         }
-
         function importData() {
-            // Вставка
-            // Сначала пробуем считать из буфера (не всегда работает в TWA из-за безопасности)
-            navigator.clipboard.readText().then(text => {
-                if (isValidJSON(text)) {
-                    processImport(text);
-                } else {
-                     manualImport();
-                }
-            }).catch(() => {
-                manualImport();
-            });
-        }
-
-        function manualImport() {
-             setTimeout(() => {
-                const input = prompt("Вставьте скопированный код базы данных сюда:");
-                if (input && isValidJSON(input)) {
-                    processImport(input);
-                } else if (input) {
-                    alert("Ошибка: Неверный формат данных");
-                }
-            }, 100);
-        }
-
-        function processImport(jsonString) {
-             if(confirm("Внимание! Это удалит текущие записи и заменит их на данные из копии. Продолжить?")) {
-                localStorage.setItem(STORAGE_KEY, jsonString);
-                logs = JSON.parse(jsonString);
-                renderLogs();
-                tg.showPopup({message: 'Данные успешно восстановлены!'});
-                tg.HapticFeedback.notificationOccurred('success');
-             }
-        }
-
-        function isValidJSON(str) {
-            try {
-                const o = JSON.parse(str);
-                if (o && typeof o === "object") return true;
-            }
-            catch (e) { }
-            return false;
+             setTimeout(() => { const input = prompt("Вставьте код базы данных:"); if (input && input.startsWith('[')) { if(confirm("Заменить текущие данные?")) { localStorage.setItem(STORAGE_KEY, input); logs = JSON.parse(input); renderLogs(); updateOilWidget(); tg.showPopup({message: 'Восстановлено!'}); } } }, 100);
         }
     </script>
 </body>
