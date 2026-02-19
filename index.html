@@ -247,13 +247,13 @@
         .screen { display: none; opacity: 0; transition: opacity 0.2s; }
         .screen.active { display: block; opacity: 1; }
         
-        /* Скрытый input для файлов */
+        /* Скрытый input для файлов: теперь поддерживает и .txt и .json */
         #file-import-input { display: none; }
     </style>
 </head>
 <body>
 
-    <input type="file" id="file-import-input" accept=".json" onchange="handleFileImport(event)">
+    <input type="file" id="file-import-input" accept=".json, .txt, text/plain, application/json" onchange="handleFileImport(event)">
 
     <div id="screen-garage" class="screen active content">
         <div class="app-header">
@@ -343,7 +343,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 14.0</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 15.0</div>
                 <div style="color:var(--hint-color); font-size:15px; margin-bottom:20px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -664,7 +664,7 @@
             });
         }
 
-        // --- УЛУЧШЕННАЯ СИСТЕМА БЭКАПА ДЛЯ iPHONE ---
+        // --- ИСПРАВЛЕННАЯ СИСТЕМА БЭКАПА (В ФОРМАТЕ .TXT) ---
         function exportToFile() {
             const fullBackup = {
                 logs: logs,
@@ -675,25 +675,23 @@
 
             const dataStr = JSON.stringify(fullBackup, null, 2);
             const date = new Date().toLocaleDateString('ru-RU').replace(/\./g, '-');
-            const fileName = `Kia_Cerato_Backup_${date}.json`;
+            
+            // ВАЖНО: Заменили расширение на .txt и MIME-тип на обычный текст
+            const fileName = `Kia_Cerato_Backup_${date}.txt`;
+            const file = new File([dataStr], fileName, { type: "text/plain" });
 
-            // Создаем файл из текста
-            const file = new File([dataStr], fileName, { type: "application/json" });
-
-            // Проверяем, поддерживает ли устройство нативное меню "Поделиться" с файлами (iOS 14+)
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 navigator.share({
                     files: [file],
-                    title: 'Резервная копия Kia Cerato',
+                    title: 'Резервная копия',
                     text: 'Файл базы данных'
                 }).then(() => {
                     tg.HapticFeedback.notificationOccurred('success');
                 }).catch((error) => {
-                    console.log('Пользователь закрыл меню или произошла ошибка', error);
+                    console.log('Отменено пользователем', error);
                 });
             } else {
-                // Если браузер не поддерживает Share API (запасной вариант)
-                const blob = new Blob([dataStr], { type: "application/json" });
+                const blob = new Blob([dataStr], { type: "text/plain" });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -718,7 +716,7 @@
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    const parsed = JSON.parse(content);
+                    const parsed = JSON.parse(content); // Читаем JSON даже из .txt файла
                     
                     if (confirm("Внимание! Текущие данные будут удалены и заменены данными из файла. Продолжить?")) {
                         
@@ -753,7 +751,7 @@
                         tg.HapticFeedback.notificationOccurred('success');
                     }
                 } catch (err) {
-                    alert("Ошибка: Неверный файл. Убедитесь, что вы выбрали правильный файл.");
+                    alert("Ошибка: Неверный файл. Убедитесь, что вы выбрали правильный файл резервной копии.");
                 }
             };
             reader.readAsText(file);
