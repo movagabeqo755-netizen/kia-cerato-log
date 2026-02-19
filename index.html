@@ -343,7 +343,7 @@
         <h1>О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 13.0</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:10px;">Версия 14.0</div>
                 <div style="color:var(--hint-color); font-size:15px; margin-bottom:20px;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -357,7 +357,7 @@
                     📥 Загрузить из Файлов
                 </button>
                 
-                <p class="warning-text">Внимание! При удалении Телеграма данные исчезнут. Периодически сохраняйте файл резервной копии.</p>
+                <p class="warning-text">При нажатии «Сохранить» выберите пункт «Сохранить в Файлы» в появившемся меню.</p>
             </div>
         </div>
     </div>
@@ -664,10 +664,8 @@
             });
         }
 
-        // --- НОВАЯ СИСТЕМА БЭКАПА (В ФАЙЛЫ) ---
-        
+        // --- УЛУЧШЕННАЯ СИСТЕМА БЭКАПА ДЛЯ iPHONE ---
         function exportToFile() {
-            // Собираем все данные приложения
             const fullBackup = {
                 logs: logs,
                 oilConfig: oilConfig,
@@ -675,31 +673,40 @@
                 plate: localStorage.getItem(PLATE_KEY) || ""
             };
 
-            // Превращаем в JSON текст
             const dataStr = JSON.stringify(fullBackup, null, 2);
-            
-            // Создаем файл (Blob)
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            // Генерируем красивое имя файла с датой
             const date = new Date().toLocaleDateString('ru-RU').replace(/\./g, '-');
             const fileName = `Kia_Cerato_Backup_${date}.json`;
 
-            // Вызываем скачивание
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Создаем файл из текста
+            const file = new File([dataStr], fileName, { type: "application/json" });
 
-            tg.HapticFeedback.notificationOccurred('success');
+            // Проверяем, поддерживает ли устройство нативное меню "Поделиться" с файлами (iOS 14+)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: 'Резервная копия Kia Cerato',
+                    text: 'Файл базы данных'
+                }).then(() => {
+                    tg.HapticFeedback.notificationOccurred('success');
+                }).catch((error) => {
+                    console.log('Пользователь закрыл меню или произошла ошибка', error);
+                });
+            } else {
+                // Если браузер не поддерживает Share API (запасной вариант)
+                const blob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                tg.HapticFeedback.notificationOccurred('success');
+            }
         }
 
         function triggerFileInput() {
-            // Имитируем нажатие на скрытую кнопку выбора файла
             document.getElementById('file-import-input').click();
         }
 
@@ -713,15 +720,12 @@
                     const content = e.target.result;
                     const parsed = JSON.parse(content);
                     
-                    if (confirm("Внимание! Это удалит текущие записи и заменит их на данные из файла. Продолжить?")) {
+                    if (confirm("Внимание! Текущие данные будут удалены и заменены данными из файла. Продолжить?")) {
                         
-                        // Проверяем, старый это формат (просто массив логов) или новый (со всеми настройками)
                         if (Array.isArray(parsed)) {
-                            // Восстановление старого формата (только история)
                             logs = parsed;
                             localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
                         } else {
-                            // Восстановление нового формата (Все настройки)
                             if (parsed.logs) {
                                 logs = parsed.logs;
                                 localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
@@ -740,7 +744,6 @@
                             }
                         }
                         
-                        // Обновляем весь интерфейс
                         loadPlate();
                         updateOdometerDisplay();
                         updateOilWidget();
@@ -750,12 +753,10 @@
                         tg.HapticFeedback.notificationOccurred('success');
                     }
                 } catch (err) {
-                    alert("Ошибка: Неверный файл. Убедитесь, что вы выбрали файл .json от этой программы.");
+                    alert("Ошибка: Неверный файл. Убедитесь, что вы выбрали правильный файл.");
                 }
             };
             reader.readAsText(file);
-            
-            // Сбрасываем инпут, чтобы можно было загрузить тот же файл еще раз, если понадобится
             event.target.value = '';
         }
     </script>
