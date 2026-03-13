@@ -9,7 +9,8 @@
         :root {
             --bg-color: var(--tg-theme-bg-color, #000000);
             --text-color: var(--tg-theme-text-color, #ffffff);
-            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            /* УЛУЧШЕННЫЙ ХИНТ (сделан ярче и контрастнее) */
+            --hint-color: #d1d1d6; 
             --link-color: var(--tg-theme-link-color, #0a84ff);
             --button-color: var(--tg-theme-button-color, #0a84ff);
             --button-text-color: var(--tg-theme-button-text-color, #ffffff);
@@ -50,6 +51,7 @@
         .app-header-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; z-index: 1; opacity: 0.8;
+            object-position: 50% 30%; /* Центрируем, чтобы машина была видна */
         }
         .app-header-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -85,7 +87,7 @@
         }
         .odometer-icon { margin-right: 6px; font-size: 12px; color: var(--hint-color); }
 
-        /* МАТОВыЕ ВИДЖЕТЫ (GLASSMORPHISM) */
+        /* МАТОВыЕ ВИДЖЕТЫ */
         .widgets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         
         .service-widget {
@@ -98,7 +100,6 @@
         }
         .service-widget:active { transform: scale(0.96); }
         
-        /* Аварийная пульсация */
         @keyframes pulse-danger {
             0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.3); border-color: rgba(255, 59, 48, 0.4); }
             70% { box-shadow: 0 0 0 12px rgba(255, 59, 48, 0); border-color: rgba(255, 59, 48, 0.1); }
@@ -107,30 +108,36 @@
         .service-widget.danger { animation: pulse-danger 2s infinite; }
 
         .service-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .service-title { font-size: 12px; text-transform: uppercase; color: var(--hint-color); font-weight: 700; letter-spacing: 0.5px; }
+        
+        /* ЧЕТКИЙ, ЯРКИЙ ЗАГОЛОВОК */
+        .service-title { font-size: 12px; text-transform: uppercase; color: #fff; font-weight: 800; letter-spacing: 0.8px; }
         .service-icon { font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
         
         .service-left-big { font-size: 24px; font-weight: 800; color: var(--text-color); line-height: 1; }
-        .service-left-label { font-size: 11px; color: var(--hint-color); margin-top: 4px; margin-bottom: 10px; }
-        .service-target { font-size: 11px; color: var(--link-color); font-weight: 600; margin-bottom: 2px; }
-        .service-last-km { font-size: 11px; color: var(--hint-color); margin-bottom: 14px; }
+        
+        /* КОНТРАСТНЫЕ, ЖИРНЫЕ ПОДПИСИ */
+        .service-left-label { font-size: 11px; color: var(--hint-color); margin-top: 4px; margin-bottom: 10px; font-weight: 700; }
+        .service-target { font-size: 11px; color: var(--link-color); font-weight: 700; margin-bottom: 2px; }
+        .service-last-km { font-size: 11px; color: var(--hint-color); margin-bottom: 14px; font-weight: 700; }
 
         .service-progress-bg { height: 6px; width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 3px; overflow: hidden; margin-top: auto; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
         .service-progress-fill { height: 100%; width: 0%; background-color: var(--green-color); border-radius: 3px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease; }
 
-        /* ВОЗДУШНЫЙ ВВОД (Минимализм) */
+        /* ВОЗДУШНЫЙ ВВОД */
         .input-row {
             background-color: rgba(44, 44, 46, 0.4);
             border-radius: 14px; padding: 12px 16px; margin-bottom: 12px;
             border: 1px solid rgba(255,255,255,0.03);
             transition: background-color 0.2s, border-color 0.2s;
         }
+        /* УЛУЧШЕННЫЙ ФОКУС: Четкая, светлая рамка */
         .input-row:focus-within {
             background-color: rgba(44, 44, 46, 0.8);
-            border-color: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.25);
         }
-        label { display: block; font-size: 12px; color: var(--hint-color); margin-bottom: 6px; font-weight: 500;}
-        input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; font-family: inherit; font-weight: 500;}
+        /* ЧЕТКИЕ ЗАГОЛОВКИ ПОЛЕЙ ВВОДА */
+        label { display: block; font-size: 12px; color: #fff; margin-bottom: 6px; font-weight: 700; letter-spacing: 0.5px;}
+        input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; font-family: inherit; font-weight: 600;}
         select { -webkit-appearance: none; }
 
         /* АНИМИРОВАННАЯ КНОПКА */
@@ -151,22 +158,22 @@
         .restore-btn { background: var(--secondary-bg); color: var(--kia-red); box-shadow: none; border: 1px solid rgba(255, 59, 48, 0.3); margin-top: 10px; }
 
         /* История */
-        .subtitle-archive { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; font-weight: 500;}
+        .subtitle-archive { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; font-weight: 600;}
         .log-item-wrapper { position: relative; margin-bottom: 12px; border-radius: 14px; overflow: hidden; background-color: var(--delete-color); }
         .log-item { background: rgba(44,44,46,0.6); padding: 16px; position: relative; z-index: 10; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 14px; will-change: transform; border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);}
         .log-item.swiped { transform: translateX(-90px); }
         .swipe-delete-text { position: absolute; top: 0; right: 0; width: 90px; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 15px; z-index: 1; }
         .log-top { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: baseline;}
-        .log-date { font-size: 13px; color: var(--hint-color); }
+        .log-date { font-size: 13px; color: var(--hint-color); font-weight: 600;}
         .log-cost { color: var(--kia-red); font-weight: 700; font-size: 16px;}
-        .log-part { font-weight: 600; font-size: 17px; margin-bottom: 4px; }
-        .log-details { font-size: 14px; color: var(--hint-color); }
+        .log-part { font-weight: 600; font-size: 17px; margin-bottom: 4px; color: #fff; }
+        .log-details { font-size: 14px; color: var(--hint-color); font-weight: 600; }
 
         /* О программе */
         .about-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60%; text-align: center; }
         .about-card-info { background: rgba(44,44,46,0.6); padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .creator-name { color: var(--text-color); font-weight: 700; }
-        .warning-text { font-size: 12px; color: var(--hint-color); margin-top: 20px; line-height: 1.5; }
+        .warning-text { font-size: 12px; color: var(--hint-color); margin-top: 20px; line-height: 1.5; font-weight: 600;}
 
         /* Меню */
         .tab-bar {
@@ -174,7 +181,7 @@
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; justify-content: space-around;
             padding-top: 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255, 255, 255, 0.05); z-index: 100;
         }
-        .tab-btn { background: none; border: none; color: var(--hint-color); font-size: 10px; font-weight: 500; display: flex; flex-direction: column; align-items: center; flex: 1; transition: color 0.2s;}
+        .tab-btn { background: none; border: none; color: var(--hint-color); font-size: 10px; font-weight: 600; display: flex; flex-direction: column; align-items: center; flex: 1; transition: color 0.2s;}
         .tab-btn.active { color: var(--button-color); }
         .tab-icon { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s;}
         .tab-btn.active .tab-icon { transform: scale(1.15); }
@@ -194,7 +201,7 @@
             <img src="car.jpg" onerror="this.src='https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000&auto=format&fit=crop'" class="app-header-bg" alt="Auto">
             <div class="app-header-overlay"></div>
             <div class="app-header-content">
-                <h1>Kia Cerato</h1>
+                <h1>Kia Cerato 1</h1>
                 <div class="car-info-row">
                     <div class="license-plate" onclick="editPlate()">
                         <div class="plate-number" id="plate-text">А 463 РН</div>
@@ -286,9 +293,9 @@
         <h1 style="font-size:28px;">О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:20px; font-weight:800; margin-bottom:6px;">Версия 17.0</div>
-                <div style="color:var(--button-color); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Premium UI</div>
-                <div style="color:var(--hint-color); font-size:14px;">
+                <div style="font-size:20px; font-weight:800; margin-bottom:6px;">Версия 17.1</div>
+                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Visual Balance</div>
+                <div style="color:var(--text-color); font-size:14px; font-weight:600;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
                 <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 20px 0;">
@@ -430,11 +437,11 @@
             if (remaining <= 0) {
                 document.getElementById('oil-remaining-text').innerText = "МЕНЯЙ";
                 document.getElementById('oil-remaining-text').style.color = "var(--kia-red)";
-                widget.classList.add('danger'); // Включаем анимацию
+                widget.classList.add('danger');
             } else {
                 document.getElementById('oil-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
                 document.getElementById('oil-remaining-text').style.color = "var(--text-color)";
-                widget.classList.remove('danger'); // Выключаем
+                widget.classList.remove('danger');
             }
             document.getElementById('oil-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextOilKm)}`;
             document.getElementById('oil-last-text').innerText = `Замена: ${new Intl.NumberFormat('ru-RU').format(lastOilKm)}`;
@@ -486,7 +493,7 @@
             if (remaining <= 0) {
                 document.getElementById('grm-remaining-text').innerText = "МЕНЯЙ";
                 document.getElementById('grm-remaining-text').style.color = "var(--kia-red)";
-                widget.classList.add('danger'); // Включаем анимацию
+                widget.classList.add('danger');
             } else {
                 document.getElementById('grm-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
                 document.getElementById('grm-remaining-text').style.color = "var(--text-color)";
@@ -641,7 +648,6 @@
             });
         }
 
-        // БЭКАП
         function exportToFile() {
             const fullBackup = { logs: logs, oilConfig: oilConfig, grmConfig: grmConfig, currentOdometer: currentOdometer, plate: localStorage.getItem(PLATE_KEY) || "" };
             const dataStr = JSON.stringify(fullBackup, null, 2);
