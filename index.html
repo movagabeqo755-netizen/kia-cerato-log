@@ -6,16 +6,17 @@
     <title>Kia Cerato Log</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* ПРИНУДИТЕЛЬНАЯ ТЕМНАЯ ТЕМА ДЛЯ ПРЕМИУМ ВИДА */
         :root {
-            --bg-color: var(--tg-theme-bg-color, #000000);
-            --text-color: var(--tg-theme-text-color, #ffffff);
-            --hint-color: #d1d1d6; 
-            --link-color: var(--tg-theme-link-color, #0a84ff);
-            --button-color: var(--tg-theme-button-color, #0a84ff);
-            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #1c1c1e);
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --hint-color: #8e8e93; 
+            --link-color: #0a84ff;
+            --button-color: #0a84ff;
+            --button-text-color: #ffffff;
+            --card-bg: rgba(30, 30, 32, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
             --kia-red: #ff3b30;
-            --delete-color: #ff453a;
             --green-color: #32d74b;
             --yellow-color: #ffd60a;
         }
@@ -36,76 +37,60 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* --- ОБЩИЕ АНИМАЦИИ ВХОДА --- */
-        .animate-in {
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-        .animate-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        /* --- АНИМАЦИИ --- */
+        .animate-in { opacity: 0; transform: translateY(15px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+        .animate-in.visible { opacity: 1; transform: translateY(0); }
 
         /* ПРЕМИУМ ШАПКА */
         .app-header-container {
-            position: relative;
-            margin: -20px -20px 20px -20px;
-            height: 190px;
-            overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-            padding: 20px;
+            position: relative; margin: -20px -20px 20px -20px; height: 200px;
+            overflow: hidden; display: flex; align-items: flex-end; padding: 20px;
             background-color: #111;
         }
         .app-header-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: 1; opacity: 0.8;
-            object-position: 50% 30%; 
+            object-fit: cover; z-index: 1; opacity: 0.75; object-position: 50% 30%; 
         }
         .app-header-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, var(--bg-color) 100%);
-            z-index: 2;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, var(--bg-color) 100%); z-index: 2;
         }
         .app-header-content {
-            position: relative; z-index: 3; width: 100%;
-            display: flex; flex-direction: column; justify-content: flex-end;
+            position: relative; z-index: 3; width: 100%; display: flex; flex-direction: column; justify-content: flex-end;
         }
-        h1 { margin: 0 0 12px 0; font-size: 32px; font-weight: 800; letter-spacing: 0.5px; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        h1 { margin: 0 0 12px 0; font-size: 32px; font-weight: 800; letter-spacing: 0.5px; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
 
-        /* Блок с номером и пробегом */
-        .car-info-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
+        /* НОМЕР И ОДОМЕТР */
+        .car-info-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;}
 
         .license-plate {
             display: inline-flex; align-items: center; background-color: #fff; color: #000;
-            border: 1px solid rgba(0,0,0,0.2); border-radius: 6px; padding: 0;
-            font-family: "Condensed", sans-serif; font-weight: bold; font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; height: 30px;
+            border-radius: 6px; padding: 0; font-family: "Condensed", sans-serif;
+            font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; height: 32px;
         }
-        .plate-number { padding: 0 6px; letter-spacing: 1px; font-size: 17px; text-transform: uppercase; }
-        .plate-region { border-left: 1px solid rgba(0,0,0,0.8); padding: 0 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 0.9; height: 100%; }
+        .plate-number { padding: 0 8px; letter-spacing: 1px; font-size: 18px; text-transform: uppercase; }
+        .plate-region { border-left: 1px solid rgba(0,0,0,0.8); padding: 0 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 0.9; height: 100%; }
         .region-code { font-size: 11px; }
-        .plate-flag { display: flex; align-items: center; font-size: 6px; }
+        .plate-flag { display: flex; align-items: center; font-size: 7px; }
 
         .odometer-badge {
-            background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
-            padding: 0 10px; height: 30px; display: flex; align-items: center;
-            font-variant-numeric: tabular-nums; font-weight: 700; font-size: 15px; color: #fff; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: rgba(40, 40, 40, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+            padding: 0 12px; height: 32px; display: flex; align-items: center;
+            font-variant-numeric: tabular-nums; font-weight: 700; font-size: 16px; color: #fff; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        .odometer-icon { margin-right: 6px; font-size: 12px; color: var(--hint-color); }
+        .odometer-icon { margin-right: 6px; font-size: 12px; color: var(--hint-color); font-weight: 600;}
 
-        /* МАТОВыЕ ВИДЖЕТЫ */
+        /* ВИДЖЕТЫ МАСЛО/ГРМ (СТЕКЛО) */
         .widgets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         
         .service-widget {
-            background: linear-gradient(145deg, rgba(44,44,46,0.7) 0%, rgba(28,28,30,0.5) 100%);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--card-bg);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--card-border);
             border-radius: 18px; padding: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
             display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
         }
         .service-widget:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -113,50 +98,46 @@
         @keyframes pulse-danger {
             0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.3); border-color: rgba(255, 59, 48, 0.4); }
             70% { box-shadow: 0 0 0 12px rgba(255, 59, 48, 0); border-color: rgba(255, 59, 48, 0.1); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); border-color: rgba(255, 255, 255, 0.08); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); border-color: var(--card-border); }
         }
         .service-widget.danger { animation: pulse-danger 2s infinite; }
 
         .service-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .service-title { font-size: 12px; text-transform: uppercase; color: #ffffff; font-weight: 800; letter-spacing: 0.8px; }
+        .service-icon { font-size: 18px; }
         
-        .service-title { font-size: 12px; text-transform: uppercase; color: #fff; font-weight: 800; letter-spacing: 0.8px; }
-        .service-icon { font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
-        
-        .service-left-big { font-size: 24px; font-weight: 800; color: var(--text-color); line-height: 1; }
-        
-        .service-left-label { font-size: 11px; color: var(--hint-color); margin-top: 4px; margin-bottom: 10px; font-weight: 700; }
-        .service-target { font-size: 11px; color: var(--link-color); font-weight: 700; margin-bottom: 2px; }
-        .service-last-km { font-size: 11px; color: var(--hint-color); margin-bottom: 14px; font-weight: 700; }
+        .service-left-big { font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1; }
+        .service-left-label { font-size: 12px; color: var(--hint-color); margin-top: 4px; margin-bottom: 12px; font-weight: 600; }
+        .service-target { font-size: 12px; color: var(--link-color); font-weight: 700; margin-bottom: 4px; }
+        .service-last-km { font-size: 11px; color: var(--hint-color); margin-bottom: 14px; font-weight: 600; }
 
-        .service-progress-bg { height: 6px; width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 3px; overflow: hidden; margin-top: auto; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
-        /* ПЛАВНЫЙ РОСТ ПРОГРЕССА */
+        .service-progress-bg { height: 6px; width: 100%; background-color: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; margin-top: auto; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
         .service-progress-fill { height: 100%; width: 0%; background-color: var(--green-color); border-radius: 3px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease; }
 
-        /* ВОЗДУШНЫЙ ВВОД */
-        .input-form-container {
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
+        /* ВВОД (СТЕКЛО) */
+        .input-form-container { transition: opacity 0.5s ease, transform 0.5s ease; }
         .input-row {
-            background-color: rgba(44, 44, 46, 0.4);
-            border-radius: 14px; padding: 12px 16px; margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,0.03);
+            background-color: var(--card-bg);
+            border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
+            border: 1px solid var(--card-border);
             transition: background-color 0.2s, border-color 0.2s;
         }
         .input-row:focus-within {
-            background-color: rgba(44, 44, 46, 0.8);
-            border-color: rgba(255,255,255,0.25);
+            background-color: rgba(40, 40, 42, 0.9);
+            border-color: rgba(255,255,255,0.3);
         }
-        label { display: block; font-size: 12px; color: #fff; margin-bottom: 6px; font-weight: 700; letter-spacing: 0.5px;}
-        input, select { width: 100%; background: transparent; border: none; color: var(--text-color); font-size: 17px; outline: none; padding: 0; font-family: inherit; font-weight: 600;}
+        label { display: block; font-size: 11px; color: var(--hint-color); margin-bottom: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;}
+        input, select { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 17px; outline: none; padding: 0; font-family: inherit; font-weight: 600;}
         select { -webkit-appearance: none; }
+        input::placeholder { color: rgba(255,255,255,0.2); }
 
         /* АНИМИРОВАННАЯ КНОПКА */
         .page-save-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--button-color) 0%, #0056b3 100%);
-            color: var(--button-text-color); border: none; border-radius: 14px;
+            background: linear-gradient(135deg, #0a84ff 0%, #0056b3 100%);
+            color: #ffffff; border: none; border-radius: 16px;
             padding: 16px; font-size: 17px; font-weight: 700; cursor: pointer;
-            margin-top: 10px; margin-bottom: 10px;
+            margin-top: 14px; margin-bottom: 10px;
             box-shadow: 0 6px 20px rgba(10, 132, 255, 0.3);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; justify-content: center; align-items: center; letter-spacing: 0.5px;
@@ -164,65 +145,56 @@
         .page-save-btn:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(10, 132, 255, 0.2); }
         .page-save-btn.edit-mode { background: linear-gradient(135deg, #34c759 0%, #248a3d 100%); box-shadow: 0 6px 20px rgba(52, 199, 89, 0.3); }
 
-        .backup-btn { background: var(--secondary-bg); color: var(--link-color); box-shadow: none; border: 1px solid rgba(10, 132, 255, 0.3); }
-        .restore-btn { background: var(--secondary-bg); color: var(--kia-red); box-shadow: none; border: 1px solid rgba(255, 59, 48, 0.3); margin-top: 10px; }
-
-        /* История */
-        .subtitle-archive { color: var(--hint-color); font-size: 15px; margin-bottom: 24px; font-weight: 600;}
+        /* ИСТОРИЯ (ИСПРАВЛЕННЫЙ ДИЗАЙН) */
+        .subtitle-archive { color: var(--hint-color); font-size: 16px; margin-bottom: 24px; font-weight: 600;}
         
         .log-item-wrapper {
-            position: relative; margin-bottom: 12px; border-radius: 14px;
-            overflow: hidden; background-color: var(--delete-color);
+            position: relative; margin-bottom: 14px; border-radius: 18px;
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
-        /* Анимация удаления элемента */
-        .log-item-wrapper.removing {
-            transform: scale(0.8) translateY(-20px);
-            opacity: 0;
-            margin-bottom: -70px; /* Схлопывание места */
-        }
+        .log-item-wrapper.removing { transform: scale(0.8) translateY(-20px); opacity: 0; margin-bottom: -70px; }
 
-        .log-item { background: rgba(44,44,46,0.6); padding: 16px; position: relative; z-index: 10; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 14px; will-change: transform; border: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);}
-        .log-item.swiped { transform: translateX(-90px); }
-        
-        /* КРАСИВЫЙ ФОН УДАЛЕНИЯ */
+        /* Контейнер удаления теперь СЗАДИ и справа */
         .swipe-delete-container {
-            position: absolute; top: 0; right: 0; width: 90px; height: 100%;
+            position: absolute; top: 0; right: 0; width: 100px; height: 100%;
+            background-color: var(--kia-red); border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
             color: white; z-index: 1;
         }
-        .swipe-delete-icon {
-            font-size: 24px;
-            opacity: 0.5;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-        }
-        .log-item.swiped + .swipe-delete-container .swipe-delete-icon {
-            transform: scale(1.2);
-            opacity: 1;
-        }
+        .swipe-delete-icon { font-size: 24px; transition: transform 0.2s ease; }
+        .log-item.swiped + .swipe-delete-container .swipe-delete-icon { transform: scale(1.2); }
 
-        .log-top { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: baseline;}
+        /* Сама карточка истории */
+        .log-item { 
+            background: var(--card-bg); padding: 18px; position: relative; z-index: 2; 
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 18px; 
+            border: 1px solid var(--card-border); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        }
+        .log-item.swiped { transform: translateX(-80px); }
+        
+        .log-top { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: baseline;}
         .log-date { font-size: 13px; color: var(--hint-color); font-weight: 600;}
-        .log-cost { color: var(--kia-red); font-weight: 700; font-size: 16px;}
-        .log-part { font-weight: 600; font-size: 17px; margin-bottom: 4px; color: #fff; }
-        .log-details { font-size: 14px; color: var(--hint-color); font-weight: 600; }
+        .log-cost { color: #ffffff; font-weight: 800; font-size: 16px;}
+        .log-part { font-weight: 700; font-size: 18px; margin-bottom: 6px; color: #ffffff; }
+        .log-details { font-size: 14px; color: var(--hint-color); font-weight: 500; line-height: 1.4; }
 
         /* О программе */
         .about-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60%; text-align: center; }
-        .about-card-info { background: rgba(44,44,46,0.6); padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .creator-name { color: var(--text-color); font-weight: 700; }
-        .warning-text { font-size: 12px; color: var(--hint-color); margin-top: 20px; line-height: 1.5; font-weight: 600;}
+        .about-card-info { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; margin-bottom: 20px; border: 1px solid var(--card-border); backdrop-filter: blur(15px); }
+        .creator-name { color: #ffffff; font-weight: 700; }
+        .warning-text { font-size: 13px; color: var(--hint-color); margin-top: 20px; line-height: 1.5; font-weight: 500;}
+        .backup-btn { background: rgba(255,255,255,0.05); color: #ffffff; box-shadow: none; border: 1px solid rgba(255,255,255,0.2); }
+        .restore-btn { background: rgba(255,59,48,0.1); color: #ff453a; box-shadow: none; border: 1px solid rgba(255, 59, 48, 0.3); margin-top: 10px; }
 
         /* Меню */
         .tab-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(28, 28, 30, 0.85);
+            position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(10, 10, 12, 0.85);
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; justify-content: space-around;
-            padding-top: 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255, 255, 255, 0.05); z-index: 100;
+            padding-top: 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid rgba(255, 255, 255, 0.1); z-index: 100;
         }
         .tab-btn { background: none; border: none; color: var(--hint-color); font-size: 10px; font-weight: 600; display: flex; flex-direction: column; align-items: center; flex: 1; transition: color 0.2s;}
         .tab-btn.active { color: var(--button-color); }
         .tab-icon { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);}
-        /* Анимация иконки при нажатии */
         .tab-btn.active .tab-icon { transform: scale(1.2) translateY(-2px); }
         
         .screen { display: none; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); }
@@ -322,17 +294,17 @@
     </div>
 
     <div id="screen-archive" class="screen content">
-        <h1 style="font-size:28px;">История</h1>
+        <h1 style="font-size:32px;">История</h1>
         <div class="subtitle-archive" id="total-spent">Всего потрачено: 0 ₽</div>
         <div id="logs-container"></div>
     </div>
 
     <div id="screen-about" class="screen content">
-        <h1 style="font-size:28px;">О программе</h1>
+        <h1 style="font-size:32px;">О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:20px; font-weight:800; margin-bottom:6px;">Версия 18.0</div>
-                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Живой дизайн</div>
+                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 18.1</div>
+                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Dark Premium</div>
                 <div style="color:var(--text-color); font-size:14px; font-weight:600;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -345,7 +317,7 @@
                     📥 Восстановить из файла
                 </button>
                 
-                <p class="warning-text">При удалении Telegram данные исчезнут. Обязательно сохраняйте файл резервной копии на устройство.</p>
+                <p class="warning-text">Обязательно сохраняйте файл резервной копии на устройство, чтобы не потерять данные.</p>
             </div>
         </div>
     </div>
@@ -359,9 +331,10 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const themeBg = tg.themeParams.bg_color || "#000000";
-        tg.setHeaderColor(themeBg);
-        tg.setBackgroundColor(themeBg);
+        
+        // Принудительно ставим темные цвета для шапки Телеграма
+        tg.setHeaderColor('#000000');
+        tg.setBackgroundColor('#000000');
         
         const STORAGE_KEY = 'kia_tg_log_v2';
         const PLATE_KEY = 'kia_plate_number';
@@ -375,25 +348,19 @@
         let currentOdometer = parseInt(localStorage.getItem(ODO_KEY)) || (logs.length > 0 ? parseInt(logs[0].mileage) : 0);
         let editingId = null;
 
-        // Инициализация данных
         loadPlate();
         updateOilWidget();
         updateGrmWidget();
         document.getElementById('inp-mileage').value = currentOdometer;
 
-        // --- ЛОГИКА АНИМАЦИИ ПРИ ЗАГРУЗКЕ ---
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Поочередное появление элементов
-            setTimeout(() => document.getElementById('anim-header').classList.add('visible'), 100);
-            setTimeout(() => document.getElementById('oil-widget').classList.add('visible'), 250);
-            setTimeout(() => document.getElementById('grm-widget').classList.add('visible'), 400);
-            setTimeout(() => document.getElementById('anim-form').classList.add('visible'), 550);
-
-            // 2. Анимация цифр одометра (накрутка от 0 до текущего)
-            animateValue("header-odometer", 0, currentOdometer, 1200);
+            setTimeout(() => document.getElementById('anim-header').classList.add('visible'), 50);
+            setTimeout(() => document.getElementById('oil-widget').classList.add('visible'), 150);
+            setTimeout(() => document.getElementById('grm-widget').classList.add('visible'), 250);
+            setTimeout(() => document.getElementById('anim-form').classList.add('visible'), 350);
+            animateValue("header-odometer", 0, currentOdometer, 1000);
         });
 
-        // Функция анимации цифр
         function animateValue(id, start, end, duration) {
             if (start === end) {
                 document.getElementById(id).innerText = new Intl.NumberFormat('ru-RU').format(end);
@@ -404,25 +371,19 @@
             const minTimer = 50;
             let stepTime = Math.abs(Math.floor(duration / range));
             stepTime = Math.max(stepTime, minTimer);
-            
             const startTime = new Date().getTime();
             const endTime = startTime + duration;
             let timer;
-            
             function run() {
                 const now = new Date().getTime();
                 const remaining = Math.max((endTime - now) / duration, 0);
                 const value = Math.round(end - (remaining * range));
                 obj.innerText = new Intl.NumberFormat('ru-RU').format(value);
-                if (value == end) {
-                    clearInterval(timer);
-                }
+                if (value == end) { clearInterval(timer); }
             }
-            
             timer = setInterval(run, stepTime);
             run();
         }
-
 
         function switchTab(tab) {
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
@@ -473,7 +434,6 @@
             if (editingId) { logs = logs.map(l => l.id === editingId ? recordData : l); } 
             else { logs.unshift(recordData); }
 
-            // Обновляем одометр без анимации "накрутки" (резко)
             if (parseInt(mileage) > currentOdometer) {
                 currentOdometer = parseInt(mileage);
                 localStorage.setItem(ODO_KEY, currentOdometer);
@@ -514,7 +474,6 @@
             if (percentLeft > 35) bar.style.backgroundColor = "var(--green-color)";
             else if (percentLeft > 15) bar.style.backgroundColor = "var(--yellow-color)";
             else bar.style.backgroundColor = "var(--kia-red)";
-            // Ширина меняется плавно благодаря CSS transition
             bar.style.width = percentLeft + "%";
 
             if (remaining <= 0) {
@@ -523,7 +482,7 @@
                 widget.classList.add('danger');
             } else {
                 document.getElementById('oil-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
-                document.getElementById('oil-remaining-text').style.color = "var(--text-color)";
+                document.getElementById('oil-remaining-text').style.color = "#ffffff";
                 widget.classList.remove('danger');
             }
             document.getElementById('oil-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextOilKm)}`;
@@ -541,7 +500,6 @@
                     if (isNaN(i)) { alert("Нужно ввести число!"); return; }
                     oilConfig = { lastKm: l, interval: i };
                     localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
-                    // Сбрасываем прогресс в 0, чтобы он плавно вырос
                     document.getElementById('oil-progress').style.width = "0%";
                     setTimeout(updateOilWidget, 50);
                     tg.HapticFeedback.notificationOccurred('success');
@@ -581,7 +539,7 @@
                 widget.classList.add('danger');
             } else {
                 document.getElementById('grm-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
-                document.getElementById('grm-remaining-text').style.color = "var(--text-color)";
+                document.getElementById('grm-remaining-text').style.color = "#ffffff";
                 widget.classList.remove('danger');
             }
             document.getElementById('grm-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextGrmKm)}`;
@@ -593,13 +551,12 @@
             if (newLast !== null && newLast.trim() !== "") {
                 const l = parseInt(newLast.replace(/\D/g,''));
                 if (isNaN(l)) { alert("Нужно ввести число!"); return; }
-                const newInt = prompt("РЕМЕНЬ ГРМ:\nЧерез сколько км менять? (Обычно 50000)", grmConfig.interval || "50000");
+                const newInt = prompt("РЕМЕНЬ ГРМ:\nЧерез сколько км менять?", grmConfig.interval || "50000");
                 if (newInt !== null && newInt.trim() !== "") {
                     const i = parseInt(newInt.replace(/\D/g,''));
                     if (isNaN(i)) { alert("Нужно ввести число!"); return; }
                     grmConfig = { lastKm: l, interval: i };
                     localStorage.setItem(GRM_KEY, JSON.stringify(grmConfig));
-                    // Сбрасываем прогресс в 0, чтобы он плавно вырос
                     document.getElementById('grm-progress').style.width = "0%";
                     setTimeout(updateGrmWidget, 50);
                     tg.HapticFeedback.notificationOccurred('success');
@@ -607,7 +564,6 @@
             }
         }
 
-        // Обновление одометра без анимации "накрутки"
         function updateOdometerDisplay() { document.getElementById('header-odometer').innerText = new Intl.NumberFormat('ru-RU').format(currentOdometer); }
         
         function editOdometer() {
@@ -617,7 +573,6 @@
                  if (!isNaN(parsed)) {
                      currentOdometer = parsed; localStorage.setItem(ODO_KEY, currentOdometer);
                      document.getElementById('header-odometer').innerText = new Intl.NumberFormat('ru-RU').format(currentOdometer);
-                     // Сбрасываем бары, чтобы они плавно пересчитались
                      document.getElementById('oil-progress').style.width = "0%";
                      document.getElementById('grm-progress').style.width = "0%";
                      setTimeout(() => { updateOilWidget(); updateGrmWidget(); }, 50);
@@ -671,29 +626,28 @@
                 total += log.cost;
                 const wrapper = document.createElement('div'); wrapper.className = 'log-item-wrapper'; wrapper.id = `log-${log.id}`;
                 wrapper.innerHTML = `
+                    <div class="swipe-delete-container" onclick="deleteLogConfirm(${log.id})">
+                        <span class="swipe-delete-icon">🗑</span>
+                    </div>
                     <div class="log-item" onclick="handleLogClick(event, ${log.id})">
                         <div class="log-top">
                             <span class="log-date">${log.date}</span>
-                            <span style="font-weight:700; font-size:15px; color:#fff;">${log.mileage} км</span>
+                            <span style="font-weight:800; font-size:15px; color:#fff;">${log.mileage} км</span>
                         </div>
                         <div class="log-part">${log.title}</div>
                         <div class="log-details">${log.category} ${log.notes ? '• '+log.notes : ''}</div>
                         <span class="log-cost">${new Intl.NumberFormat('ru-RU').format(log.cost)} ₽</span>
                     </div>
-                    <div class="swipe-delete-container" onclick="deleteLogConfirm(${log.id})">
-                        <span class="swipe-delete-icon">🗑</span>
-                    </div>
                 `;
-                enableSwipe(wrapper.querySelector('.log-item')); wrapper.appendChild(wrapper.querySelector('.log-item')); container.appendChild(wrapper);
+                enableSwipe(wrapper.querySelector('.log-item')); 
+                container.appendChild(wrapper);
             });
             document.getElementById('total-spent').innerText = `Всего потрачено: ${new Intl.NumberFormat('ru-RU').format(total)} ₽`;
         }
 
-        // Обработка клика, чтобы не срабатывал при свайпе
         function handleLogClick(event, id) {
             if (event.currentTarget.classList.contains('swiped')) {
-                event.currentTarget.classList.remove('swiped');
-                return;
+                event.currentTarget.classList.remove('swiped'); return;
             }
             startEdit(id);
         }
@@ -720,18 +674,13 @@
              const wrapper = document.getElementById(`log-${id}`);
              tg.showConfirm("Удалить эту запись навсегда?", function(ok) { 
                  if (ok) { 
-                     // Анимация удаления
-                     wrapper.classList.add('removing');
-                     tg.HapticFeedback.notificationOccurred('success');
-                     
+                     wrapper.classList.add('removing'); tg.HapticFeedback.notificationOccurred('success');
                      setTimeout(() => {
                          logs = logs.filter(l => l.id !== id); 
                          localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); 
                          renderLogs(); updateOilWidget(); updateGrmWidget(); 
-                     }, 300); // Время анимации CSS
-                 } else {
-                     wrapper.querySelector('.log-item').classList.remove('swiped');
-                 }
+                     }, 300);
+                 } else { wrapper.querySelector('.log-item').classList.remove('swiped'); }
              });
         }
 
@@ -764,7 +713,6 @@
             });
         }
 
-        // БЭКАП
         function exportToFile() {
             const fullBackup = { logs: logs, oilConfig: oilConfig, grmConfig: grmConfig, currentOdometer: currentOdometer, plate: localStorage.getItem(PLATE_KEY) || "" };
             const dataStr = JSON.stringify(fullBackup, null, 2);
@@ -796,7 +744,6 @@
                             if (parsed.currentOdometer) { currentOdometer = parsed.currentOdometer; localStorage.setItem(ODO_KEY, currentOdometer); document.getElementById('inp-mileage').value = currentOdometer; }
                             if (parsed.plate) { localStorage.setItem(PLATE_KEY, parsed.plate); }
                         }
-                        // Перезагрузка всего сбросом баров для платного роста
                         document.getElementById('oil-progress').style.width = "0%";
                         document.getElementById('grm-progress').style.width = "0%";
                         loadPlate(); updateOdometerDisplay(); renderLogs();
