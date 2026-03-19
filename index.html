@@ -145,7 +145,7 @@
         .page-save-btn:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(10, 132, 255, 0.2); }
         .page-save-btn.edit-mode { background: linear-gradient(135deg, #34c759 0%, #248a3d 100%); box-shadow: 0 6px 20px rgba(52, 199, 89, 0.3); }
 
-        /* ИСТОРИЯ (ИСПРАВЛЕННЫЙ ДИЗАЙН) */
+        /* ИСТОРИЯ (ИСПРАВЛЕННЫЙ ФОН: СПЛОШНОЙ ЦВЕТ ВМЕСТО СТЕКЛА) */
         .subtitle-archive { color: var(--hint-color); font-size: 16px; margin-bottom: 24px; font-weight: 600;}
         
         .log-item-wrapper {
@@ -154,7 +154,6 @@
         }
         .log-item-wrapper.removing { transform: scale(0.8) translateY(-20px); opacity: 0; margin-bottom: -70px; }
 
-        /* Контейнер удаления теперь СЗАДИ и справа */
         .swipe-delete-container {
             position: absolute; top: 0; right: 0; width: 100px; height: 100%;
             background-color: var(--kia-red); border-radius: 18px;
@@ -164,11 +163,12 @@
         .swipe-delete-icon { font-size: 24px; transition: transform 0.2s ease; }
         .log-item.swiped + .swipe-delete-container .swipe-delete-icon { transform: scale(1.2); }
 
-        /* Сама карточка истории */
+        /* Сама карточка истории - ТЕПЕРЬ СПЛОШНАЯ (без прозрачности) */
         .log-item { 
-            background: var(--card-bg); padding: 18px; position: relative; z-index: 2; 
+            background: #1c1c1e; /* Чистый плотный темный цвет, скрывающий красный фон */
+            padding: 18px; position: relative; z-index: 2; 
             transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 18px; 
-            border: 1px solid var(--card-border); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--card-border); 
         }
         .log-item.swiped { transform: translateX(-80px); }
         
@@ -303,8 +303,8 @@
         <h1 style="font-size:32px;">О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 18.1</div>
-                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Dark Premium</div>
+                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 18.2</div>
+                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Bugfix</div>
                 <div style="color:var(--text-color); font-size:14px; font-weight:600;">
                     Создатель: <span class="creator-name">romerioyalta</span>
                 </div>
@@ -332,7 +332,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Принудительно ставим темные цвета для шапки Телеграма
         tg.setHeaderColor('#000000');
         tg.setBackgroundColor('#000000');
         
@@ -551,7 +550,7 @@
             if (newLast !== null && newLast.trim() !== "") {
                 const l = parseInt(newLast.replace(/\D/g,''));
                 if (isNaN(l)) { alert("Нужно ввести число!"); return; }
-                const newInt = prompt("РЕМЕНЬ ГРМ:\nЧерез сколько км менять?", grmConfig.interval || "50000");
+                const newInt = prompt("РЕМЕНЬ ГРМ:\nЧерез сколько км менять? (Обычно 50000)", grmConfig.interval || "50000");
                 if (newInt !== null && newInt.trim() !== "") {
                     const i = parseInt(newInt.replace(/\D/g,''));
                     if (isNaN(i)) { alert("Нужно ввести число!"); return; }
