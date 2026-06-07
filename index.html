@@ -132,27 +132,33 @@
         .page-save-btn:active { transform: scale(0.96); }
         .page-save-btn.edit-mode { background: linear-gradient(135deg, #34c759 0%, #248a3d 100%); box-shadow: 0 6px 20px rgba(52, 199, 89, 0.3); }
 
-        /* ЭКРАН СТРАХОВКИ (НОВЫЙ) */
+        /* ЭКРАН СТРАХОВКИ */
         .insurance-status-card {
             background: #1c1c1e; border: 1px solid var(--card-border); border-radius: 18px; padding: 20px;
             text-align: center; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
         .ins-days-big { font-size: 42px; font-weight: 900; margin: 10px 0; }
-        .ins-detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 15px; }
-        .ins-detail-row:last-child { border-bottom: none; }
-        .ins-detail-label { color: var(--hint-color); font-weight: 500; }
-        .ins-detail-val { font-weight: 700; color: #fff; }
         
-        /* Кнопка загрузки фото */
+        /* Кнопки и документы */
         .file-upload-trigger {
             background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);
             border-radius: 14px; padding: 14px; text-align: center; color: var(--link-color);
-            font-weight: 600; cursor: pointer; margin-bottom: 15px; font-size: 15px;
+            font-weight: 600; cursor: pointer; margin-bottom: 15px; font-size: 15px; transition: background 0.2s;
         }
+        .file-upload-trigger:active { background: rgba(255,255,255,0.1); }
+        
         .insurance-image-preview {
             width: 100%; border-radius: 14px; margin-top: 10px; border: 1px solid var(--card-border);
             display: none; max-height: 400px; object-fit: contain; background: #000;
         }
+        
+        /* Новый виджет для PDF */
+        .insurance-pdf-preview {
+            background: linear-gradient(145deg, rgba(44,44,46,0.7) 0%, rgba(28,28,30,0.5) 100%);
+            border: 1px solid var(--card-border); border-radius: 14px; padding: 20px; text-align: center; 
+            color: #fff; font-weight: 600; cursor: pointer; margin-top: 10px; display: none; transition: transform 0.2s;
+        }
+        .insurance-pdf-preview:active { transform: scale(0.97); }
 
         /* ИСТОРИЯ */
         .subtitle-archive { color: var(--hint-color); font-size: 16px; margin-bottom: 24px; font-weight: 600;}
@@ -202,6 +208,7 @@
 
     <input type="file" id="file-import-input" accept=".json, .txt, text/plain, application/json" onchange="handleFileImport(event)">
 
+    <!-- ЭКРАН 1: ГАРАЖ -->
     <div id="screen-garage" class="screen active content">
         <div class="app-header-container animate-in" id="anim-header">
             <img src="car.JPG" onerror="this.style.display='none'" class="app-header-bg" alt="Kia Cerato">
@@ -266,15 +273,18 @@
         </div>
     </div>
 
+    <!-- ЭКРАН 2: СТРАХОВКА (НОВЫЙ) -->
     <div id="screen-insurance" class="screen content">
         <h1 style="font-size:32px; margin-bottom:20px;">Страховка</h1>
         
+        <!-- Виджет статуса страховки -->
         <div class="insurance-status-card" id="ins-card-badge">
             <div style="font-size:14px; text-transform:uppercase; letter-spacing:1px; font-weight:800; color:var(--hint-color);" id="ins-status-title">Статус полиса</div>
             <div class="ins-days-big" id="ins-days-text">Не настроена</div>
             <div style="font-size:13px; font-weight:600; color:var(--hint-color);" id="ins-date-subtext">Укажите данные ниже</div>
         </div>
 
+        <!-- Форма настройки -->
         <div style="font-size:18px; font-weight:800; margin-bottom:12px; letter-spacing:0.3px;">Данные полиса</div>
         <div class="input-form-container">
             <div class="input-row">
@@ -290,36 +300,46 @@
                 <input type="text" id="ins-number" placeholder="ХХХ № 0000000000" oninput="saveInsurance()">
             </div>
             
-            <input type="file" id="ins-file-hidden" accept="image/*" onchange="processInsurancePhoto(event)">
+            <!-- Загрузка бланка (ТЕПЕРЬ ПОДДЕРЖИВАЕТ И PDF) -->
+            <input type="file" id="ins-file-hidden" accept="image/*, application/pdf" onchange="processInsurancePhoto(event)">
             <div class="file-upload-trigger" onclick="document.getElementById('ins-file-hidden').click()">
-                📷 Загрузить / Сфотографировать бланк
+                📄 Загрузить полис (Фото или PDF)
             </div>
             
+            <!-- Контейнеры для отображения загруженного -->
             <img id="ins-preview" class="insurance-image-preview" alt="Бланк страховки">
+            
+            <div id="ins-pdf-preview" class="insurance-pdf-preview" onclick="openPdf()">
+                📄 Полис загружен (PDF)<br>
+                <span style="font-size: 12px; color: var(--hint-color); font-weight:500;">Нажмите, чтобы открыть / скачать документ</span>
+            </div>
         </div>
     </div>
 
+    <!-- ЭКРАН 3: ИСТОРИЯ -->
     <div id="screen-archive" class="screen content">
         <h1 style="font-size:32px;">История</h1>
         <div class="subtitle-archive" id="total-spent">Всего потрачено: 0 ₽</div>
         <div id="logs-container"></div>
     </div>
 
+    <!-- ЭКРАН 4: ИНФО -->
     <div id="screen-about" class="screen content">
         <h1 style="font-size:32px;">О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 19.0</div>
-                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Полный контроль</div>
+                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 19.1</div>
+                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">PDF Поддержка</div>
                 <div style="color:var(--text-color); font-size:14px; font-weight:600;">Создатель: <span class="creator-name">romerioyalta</span></div>
                 <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 20px 0;">
                 <button class="page-save-btn backup-btn" onclick="exportToFile()">📤 Резервная копия</button>
                 <button class="page-save-btn restore-btn" onclick="triggerFileInput()">📥 Восстановить из файла</button>
-                <p class="warning-text">Файл бэкапа теперь сохраняет историю ремонта, настройки масла, ГРМ и бланк страховки.</p>
+                <p class="warning-text">Файл бэкапа сохраняет историю ремонта, настройки масла, ГРМ и прикрепленный бланк страховки.</p>
             </div>
         </div>
     </div>
 
+    <!-- МЕНЮ НА 4 КНОПКИ -->
     <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('garage')"><span class="tab-icon">🛠</span><span>Гараж</span></button>
         <button class="tab-btn" onclick="switchTab('insurance')"><span class="tab-icon">🛡️</span><span>Страховка</span></button>
@@ -338,7 +358,7 @@
         const OIL_KEY = 'kia_oil_config_v3';
         const GRM_KEY = 'kia_grm_config_v1';
         const ODO_KEY = 'kia_current_odometer';
-        const INS_KEY = 'kia_ins_config_v1'; // Ключ для страховки
+        const INS_KEY = 'kia_ins_config_v1';
 
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let oilConfig = JSON.parse(localStorage.getItem(OIL_KEY)) || { lastKm: 0, interval: 7000 };
@@ -347,7 +367,6 @@
         let currentOdometer = parseInt(localStorage.getItem(ODO_KEY)) || (logs.length > 0 ? parseInt(logs[0].mileage) : 0);
         let editingId = null;
 
-        // Инициализация
         loadPlate();
         updateOilWidget();
         updateGrmWidget();
@@ -380,7 +399,6 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             tg.HapticFeedback.selectionChanged();
 
-            // Индексы кнопок меню теперь: 0-Гараж, 1-Страховка, 2-История, 3-Инфо
             if (tab === 'garage') {
                 document.getElementById('screen-garage').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
@@ -403,14 +421,26 @@
             }
         }
 
-        // --- ЛОГИКА СТРАХОВКИ ---
+        // --- ЛОГИКА СТРАХОВКИ (ОБНОВЛЕННАЯ С PDF) ---
         function loadInsuranceForm() {
             document.getElementById('ins-exp-date').value = insConfig.expDate || '';
             document.getElementById('ins-company').value = insConfig.company || '';
             document.getElementById('ins-number').value = insConfig.number || '';
+            
+            const previewImg = document.getElementById('ins-preview');
+            const previewPdf = document.getElementById('ins-pdf-preview');
+            
+            // Сбрасываем оба превью
+            previewImg.style.display = 'none';
+            previewPdf.style.display = 'none';
+
             if (insConfig.photo) {
-                const preview = document.getElementById('ins-preview');
-                preview.src = insConfig.photo; preview.style.display = 'block';
+                if (insConfig.photo.startsWith('data:application/pdf')) {
+                    previewPdf.style.display = 'block'; // Показываем кнопку PDF
+                } else {
+                    previewImg.src = insConfig.photo; // Показываем картинку
+                    previewImg.style.display = 'block';
+                }
             }
             updateInsuranceWidget();
         }
@@ -439,7 +469,6 @@
             const today = new Date(); today.setHours(0,0,0,0);
             const diffTime = exp - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
             const formattedDate = exp.toLocaleDateString('ru-RU');
             subtext.innerText = `Действует до: ${formattedDate} ${insConfig.company ? '• ' + insConfig.company : ''}`;
 
@@ -451,23 +480,42 @@
                 title.innerText = "ВНИМАНИЕ"; daysText.innerText = "Заканчивается сегодня!";
                 daysText.style.color = "var(--yellow-color)"; card.style.background = "#2c2c2e";
             } else {
-                title.innerText = "ПОЛИС АКТИВЕН";
-                daysText.innerText = `Осталось ${diffDays} дн.`;
+                title.innerText = "ПОЛИС АКТИВЕН"; daysText.innerText = `Осталось ${diffDays} дн.`;
                 if (diffDays <= 30) { daysText.style.color = "var(--yellow-color)"; card.style.background = "#2c2c2e"; } 
                 else { daysText.style.color = "var(--green-color)"; card.style.background = "rgba(50, 215, 75, 0.1)"; }
             }
         }
 
-        // Микро-движок сжатия больших фото с Айфона
         function processInsurancePhoto(event) {
             const file = event.target.files[0]; if (!file) return;
+            
+            // ЕСЛИ ЭТО PDF
+            if (file.type === 'application/pdf') {
+                // Защита памяти: запрещаем PDF больше 2.5 МБ (2.5 * 1024 * 1024 байт)
+                if (file.size > 2621440) {
+                    tg.showPopup({title: 'Файл слишком большой', message: 'Ваш PDF весит больше 2.5 МБ. Память приложения ограничена, чтобы оно не тормозило. Пожалуйста, сделайте обычный скриншот полиса.'});
+                    event.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    insConfig.photo = e.target.result;
+                    localStorage.setItem(INS_KEY, JSON.stringify(insConfig));
+                    loadInsuranceForm();
+                    tg.HapticFeedback.notificationOccurred('success');
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            // ЕСЛИ ЭТО КАРТИНКА (Сжатие)
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     let width = img.width; let height = img.height;
-                    const MAX_SIZE = 1000; // Ограничиваем сторону в 1000 пикселей
+                    const MAX_SIZE = 1000; 
                     if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
                     else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
                     
@@ -475,19 +523,28 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Переводим в сжатый JPG (70% качества) для экономии 90% памяти!
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                    
                     insConfig.photo = compressedBase64;
                     localStorage.setItem(INS_KEY, JSON.stringify(insConfig));
                     
-                    const preview = document.getElementById('ins-preview');
-                    preview.src = compressedBase64; preview.style.display = 'block';
+                    loadInsuranceForm();
                     tg.HapticFeedback.notificationOccurred('success');
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
+        }
+
+        // Функция скачивания/открытия PDF
+        function openPdf() {
+            if (insConfig.photo && insConfig.photo.startsWith('data:application/pdf')) {
+                const a = document.createElement('a');
+                a.href = insConfig.photo;
+                a.download = 'Insurance_Policy.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
         }
 
         // --- ОСТАЛЬНАЯ СТАНДАРТНАЯ ЛОГИКА ---
@@ -646,7 +703,6 @@
             });
         }
 
-        // РЕЗЕРВНАЯ КОПИЯ (ТЕПЕРЬ С ВКЛЮЧЕНИЕМ СТРАХОВКИ)
         function exportToFile() {
             const fullBackup = { logs: logs, oilConfig: oilConfig, grmConfig: grmConfig, insConfig: insConfig, currentOdometer: currentOdometer, plate: localStorage.getItem(PLATE_KEY) || "" };
             const dataStr = JSON.stringify(fullBackup, null, 2);
