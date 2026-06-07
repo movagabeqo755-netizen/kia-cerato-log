@@ -83,7 +83,7 @@
         .odometer-icon { margin-right: 6px; font-size: 12px; color: var(--hint-color); font-weight: 600;}
 
         /* ВИДЖЕТЫ МАСЛО/ГРМ (СТЕКЛО) */
-        .widgets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .widgets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
         
         .service-widget {
             background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -110,6 +110,22 @@
 
         .service-progress-bg { height: 6px; width: 100%; background-color: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; margin-top: auto; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
         .service-progress-fill { height: 100%; width: 0%; background-color: var(--green-color); border-radius: 3px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* ПЛАШКА СТРАХОВКИ НА ГЛАВНОЙ */
+        .insurance-banner {
+            background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .insurance-banner:active { transform: scale(0.97); }
+        .ins-banner-left { display: flex; align-items: center; gap: 14px; }
+        .ins-banner-icon { font-size: 24px; }
+        .ins-banner-title { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px;}
+        .ins-banner-sub { font-size: 12px; color: var(--hint-color); font-weight: 600;}
+        .ins-banner-right { display: flex; align-items: center; gap: 10px; }
+        .ins-banner-days { font-size: 16px; font-weight: 800; color: #fff; }
+        .ins-banner-arrow { font-size: 20px; color: var(--hint-color); padding-bottom: 2px;}
 
         /* ЭЛЕМЕНТЫ ВВОДА (СТЕКЛО) */
         .input-row {
@@ -152,7 +168,7 @@
             display: none; max-height: 400px; object-fit: contain; background: #000;
         }
         
-        /* Новый виджет для PDF */
+        /* Виджет для PDF */
         .insurance-pdf-preview {
             background: linear-gradient(145deg, rgba(44,44,46,0.7) 0%, rgba(28,28,30,0.5) 100%);
             border: 1px solid var(--card-border); border-radius: 14px; padding: 20px; text-align: center; 
@@ -251,6 +267,21 @@
             </div>
         </div>
 
+        <!-- НОВАЯ ПЛАШКА СТРАХОВКИ НА ГЛАВНОЙ -->
+        <div class="insurance-banner animate-in" id="garage-ins-banner" onclick="switchTab('insurance')" style="transition-delay: 0.25s;">
+            <div class="ins-banner-left">
+                <span class="ins-banner-icon">🛡️</span>
+                <div class="ins-banner-text">
+                    <div class="ins-banner-title">ОСАГО</div>
+                    <div class="ins-banner-sub" id="garage-ins-sub">Не настроена</div>
+                </div>
+            </div>
+            <div class="ins-banner-right">
+                <span class="ins-banner-days" id="garage-ins-days">--</span>
+                <span class="ins-banner-arrow">›</span>
+            </div>
+        </div>
+
         <div class="input-form-container animate-in" id="anim-form" style="transition-delay: 0.3s;">
             <div class="input-row"> <label>ПРОБЕГ (КМ)</label> <input type="number" id="inp-mileage" placeholder="295000"> </div>
             <div class="input-row">
@@ -273,7 +304,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: СТРАХОВКА (НОВЫЙ) -->
+    <!-- ЭКРАН 2: СТРАХОВКА -->
     <div id="screen-insurance" class="screen content">
         <h1 style="font-size:32px; margin-bottom:20px;">Страховка</h1>
         
@@ -300,18 +331,16 @@
                 <input type="text" id="ins-number" placeholder="ХХХ № 0000000000" oninput="saveInsurance()">
             </div>
             
-            <!-- Загрузка бланка (ТЕПЕРЬ ПОДДЕРЖИВАЕТ И PDF) -->
             <input type="file" id="ins-file-hidden" accept="image/*, application/pdf" onchange="processInsurancePhoto(event)">
             <div class="file-upload-trigger" onclick="document.getElementById('ins-file-hidden').click()">
                 📄 Загрузить полис (Фото или PDF)
             </div>
             
-            <!-- Контейнеры для отображения загруженного -->
             <img id="ins-preview" class="insurance-image-preview" alt="Бланк страховки">
             
             <div id="ins-pdf-preview" class="insurance-pdf-preview" onclick="openPdf()">
                 📄 Полис загружен (PDF)<br>
-                <span style="font-size: 12px; color: var(--hint-color); font-weight:500;">Нажмите, чтобы открыть / скачать документ</span>
+                <span style="font-size: 12px; color: var(--hint-color); font-weight:500;">Нажмите, чтобы открыть / скачать</span>
             </div>
         </div>
     </div>
@@ -328,8 +357,8 @@
         <h1 style="font-size:32px;">О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 19.1</div>
-                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">PDF Поддержка</div>
+                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 19.2</div>
+                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">UI Улучшения</div>
                 <div style="color:var(--text-color); font-size:14px; font-weight:600;">Создатель: <span class="creator-name">romerioyalta</span></div>
                 <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 20px 0;">
                 <button class="page-save-btn backup-btn" onclick="exportToFile()">📤 Резервная копия</button>
@@ -377,6 +406,7 @@
             setTimeout(() => document.getElementById('anim-header').classList.add('visible'), 50);
             setTimeout(() => document.getElementById('oil-widget').classList.add('visible'), 150);
             setTimeout(() => document.getElementById('grm-widget').classList.add('visible'), 250);
+            setTimeout(() => document.getElementById('garage-ins-banner').classList.add('visible'), 300);
             setTimeout(() => document.getElementById('anim-form').classList.add('visible'), 350);
             animateValue("header-odometer", 0, currentOdometer, 1000);
         });
@@ -421,7 +451,7 @@
             }
         }
 
-        // --- ЛОГИКА СТРАХОВКИ (ОБНОВЛЕННАЯ С PDF) ---
+        // --- ЛОГИКА СТРАХОВКИ (С ОБНОВЛЕНИЕМ ПЛАШКИ НА ГЛАВНОЙ) ---
         function loadInsuranceForm() {
             document.getElementById('ins-exp-date').value = insConfig.expDate || '';
             document.getElementById('ins-company').value = insConfig.company || '';
@@ -430,15 +460,14 @@
             const previewImg = document.getElementById('ins-preview');
             const previewPdf = document.getElementById('ins-pdf-preview');
             
-            // Сбрасываем оба превью
             previewImg.style.display = 'none';
             previewPdf.style.display = 'none';
 
             if (insConfig.photo) {
                 if (insConfig.photo.startsWith('data:application/pdf')) {
-                    previewPdf.style.display = 'block'; // Показываем кнопку PDF
+                    previewPdf.style.display = 'block';
                 } else {
-                    previewImg.src = insConfig.photo; // Показываем картинку
+                    previewImg.src = insConfig.photo;
                     previewImg.style.display = 'block';
                 }
             }
@@ -459,10 +488,21 @@
             const subtext = document.getElementById('ins-date-subtext');
             const title = document.getElementById('ins-status-title');
 
+            // Плашка на главной
+            const garageBanner = document.getElementById('garage-ins-banner');
+            const garageSub = document.getElementById('garage-ins-sub');
+            const garageDays = document.getElementById('garage-ins-days');
+
             if (!insConfig.expDate) {
                 daysText.innerText = "Не настроена"; daysText.style.color = "#ffffff";
                 subtext.innerText = "Укажите дату окончания ниже"; card.classList.remove('danger-pulse-card');
-                card.style.background = "#1c1c1e"; return;
+                card.style.background = "#1c1c1e";
+                
+                // Сброс плашки
+                if(garageSub) garageSub.innerText = "Нажмите, чтобы настроить";
+                if(garageDays) { garageDays.innerText = "--"; garageDays.style.color = "var(--hint-color)"; }
+                if(garageBanner) { garageBanner.classList.remove('danger-pulse-card'); garageBanner.style.borderColor = "var(--card-border)"; }
+                return;
             }
 
             const exp = new Date(insConfig.expDate); exp.setHours(0,0,0,0);
@@ -470,28 +510,47 @@
             const diffTime = exp - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             const formattedDate = exp.toLocaleDateString('ru-RU');
+            
             subtext.innerText = `Действует до: ${formattedDate} ${insConfig.company ? '• ' + insConfig.company : ''}`;
+            if(garageSub) garageSub.innerText = `До ${formattedDate}`;
 
             card.classList.remove('danger-pulse-card');
+            if(garageBanner) garageBanner.classList.remove('danger-pulse-card');
+
             if (diffDays < 0) {
                 title.innerText = "ПОЛИС ИСТЕК"; daysText.innerText = "ПРОСРОЧЕНА";
                 daysText.style.color = "var(--kia-red)"; card.classList.add('danger-pulse-card');
+                
+                // Плашка (Просрочено)
+                if(garageDays) { garageDays.innerText = "ИСТЁК"; garageDays.style.color = "var(--kia-red)"; }
+                if(garageBanner) { garageBanner.classList.add('danger-pulse-card'); garageBanner.style.borderColor = "var(--kia-red)"; }
+
             } else if (diffDays === 0) {
                 title.innerText = "ВНИМАНИЕ"; daysText.innerText = "Заканчивается сегодня!";
                 daysText.style.color = "var(--yellow-color)"; card.style.background = "#2c2c2e";
+                
+                // Плашка (Сегодня)
+                if(garageDays) { garageDays.innerText = "Сегодня!"; garageDays.style.color = "var(--yellow-color)"; }
+                if(garageBanner) { garageBanner.style.borderColor = "var(--yellow-color)"; }
+
             } else {
                 title.innerText = "ПОЛИС АКТИВЕН"; daysText.innerText = `Осталось ${diffDays} дн.`;
-                if (diffDays <= 30) { daysText.style.color = "var(--yellow-color)"; card.style.background = "#2c2c2e"; } 
-                else { daysText.style.color = "var(--green-color)"; card.style.background = "rgba(50, 215, 75, 0.1)"; }
+                if (diffDays <= 30) { 
+                    daysText.style.color = "var(--yellow-color)"; card.style.background = "#2c2c2e"; 
+                    if(garageDays) { garageDays.innerText = `${diffDays} дн.`; garageDays.style.color = "var(--yellow-color)"; }
+                    if(garageBanner) { garageBanner.style.borderColor = "var(--yellow-color)"; }
+                } 
+                else { 
+                    daysText.style.color = "var(--green-color)"; card.style.background = "rgba(50, 215, 75, 0.1)"; 
+                    if(garageDays) { garageDays.innerText = `${diffDays} дн.`; garageDays.style.color = "var(--green-color)"; }
+                    if(garageBanner) { garageBanner.style.borderColor = "var(--card-border)"; }
+                }
             }
         }
 
         function processInsurancePhoto(event) {
             const file = event.target.files[0]; if (!file) return;
-            
-            // ЕСЛИ ЭТО PDF
             if (file.type === 'application/pdf') {
-                // Защита памяти: запрещаем PDF больше 2.5 МБ (2.5 * 1024 * 1024 байт)
                 if (file.size > 2621440) {
                     tg.showPopup({title: 'Файл слишком большой', message: 'Ваш PDF весит больше 2.5 МБ. Память приложения ограничена, чтобы оно не тормозило. Пожалуйста, сделайте обычный скриншот полиса.'});
                     event.target.value = '';
@@ -508,7 +567,6 @@
                 return;
             }
 
-            // ЕСЛИ ЭТО КАРТИНКА (Сжатие)
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -518,15 +576,12 @@
                     const MAX_SIZE = 1000; 
                     if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
                     else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                    
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
                     insConfig.photo = compressedBase64;
                     localStorage.setItem(INS_KEY, JSON.stringify(insConfig));
-                    
                     loadInsuranceForm();
                     tg.HapticFeedback.notificationOccurred('success');
                 };
@@ -535,15 +590,11 @@
             reader.readAsDataURL(file);
         }
 
-        // Функция скачивания/открытия PDF
         function openPdf() {
             if (insConfig.photo && insConfig.photo.startsWith('data:application/pdf')) {
                 const a = document.createElement('a');
-                a.href = insConfig.photo;
-                a.download = 'Insurance_Policy.pdf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                a.href = insConfig.photo; a.download = 'Insurance_Policy.pdf';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
             }
         }
 
