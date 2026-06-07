@@ -86,21 +86,18 @@
         .widgets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         
         .service-widget {
-            background: var(--card-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--card-border);
-            border-radius: 18px; padding: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-            display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--card-border); border-radius: 18px; padding: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s;
         }
-        .service-widget:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .service-widget:active { transform: scale(0.96); }
         
         @keyframes pulse-danger {
-            0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.3); border-color: rgba(255, 59, 48, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(255, 59, 48, 0); border-color: rgba(255, 59, 48, 0.1); }
+            0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4); border-color: rgba(255, 59, 48, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 59, 48, 0); border-color: rgba(255, 59, 48, 0.2); }
             100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); border-color: var(--card-border); }
         }
-        .service-widget.danger { animation: pulse-danger 2s infinite; }
+        .danger-pulse-card { animation: pulse-danger 2s infinite; }
 
         .service-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .service-title { font-size: 12px; text-transform: uppercase; color: #ffffff; font-weight: 800; letter-spacing: 0.8px; }
@@ -112,65 +109,65 @@
         .service-last-km { font-size: 11px; color: var(--hint-color); margin-bottom: 14px; font-weight: 600; }
 
         .service-progress-bg { height: 6px; width: 100%; background-color: rgba(0,0,0,0.5); border-radius: 3px; overflow: hidden; margin-top: auto; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
-        .service-progress-fill { height: 100%; width: 0%; background-color: var(--green-color); border-radius: 3px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease; }
+        .service-progress-fill { height: 100%; width: 0%; background-color: var(--green-color); border-radius: 3px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* ВВОД (СТЕКЛО) */
-        .input-form-container { transition: opacity 0.5s ease, transform 0.5s ease; }
+        /* ЭЛЕМЕНТЫ ВВОДА (СТЕКЛО) */
         .input-row {
-            background-color: var(--card-bg);
-            border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
-            border: 1px solid var(--card-border);
-            transition: background-color 0.2s, border-color 0.2s;
+            background-color: var(--card-bg); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
+            border: 1px solid var(--card-border); transition: border-color 0.2s;
         }
-        .input-row:focus-within {
-            background-color: rgba(40, 40, 42, 0.9);
-            border-color: rgba(255,255,255,0.3);
-        }
+        .input-row:focus-within { background-color: rgba(40, 40, 42, 0.9); border-color: rgba(255,255,255,0.3); }
         label { display: block; font-size: 11px; color: var(--hint-color); margin-bottom: 8px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;}
         input, select { width: 100%; background: transparent; border: none; color: #ffffff; font-size: 17px; outline: none; padding: 0; font-family: inherit; font-weight: 600;}
         select { -webkit-appearance: none; }
-        input::placeholder { color: rgba(255,255,255,0.2); }
+        input[type="date"] { color-scheme: dark; }
 
-        /* АНИМИРОВАННАЯ КНОПКА */
+        /* КНОПКИ */
         .page-save-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #0a84ff 0%, #0056b3 100%);
-            color: #ffffff; border: none; border-radius: 16px;
-            padding: 16px; font-size: 17px; font-weight: 700; cursor: pointer;
-            margin-top: 14px; margin-bottom: 10px;
-            box-shadow: 0 6px 20px rgba(10, 132, 255, 0.3);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; justify-content: center; align-items: center; letter-spacing: 0.5px;
+            width: 100%; background: linear-gradient(135deg, #0a84ff 0%, #0056b3 100%);
+            color: #ffffff; border: none; border-radius: 16px; padding: 16px; font-size: 17px; font-weight: 700; cursor: pointer;
+            margin-top: 14px; margin-bottom: 10px; box-shadow: 0 6px 20px rgba(10, 132, 255, 0.3);
+            transition: all 0.2s; display: flex; justify-content: center; align-items: center; letter-spacing: 0.5px;
         }
-        .page-save-btn:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(10, 132, 255, 0.2); }
+        .page-save-btn:active { transform: scale(0.96); }
         .page-save-btn.edit-mode { background: linear-gradient(135deg, #34c759 0%, #248a3d 100%); box-shadow: 0 6px 20px rgba(52, 199, 89, 0.3); }
+
+        /* ЭКРАН СТРАХОВКИ (НОВЫЙ) */
+        .insurance-status-card {
+            background: #1c1c1e; border: 1px solid var(--card-border); border-radius: 18px; padding: 20px;
+            text-align: center; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .ins-days-big { font-size: 42px; font-weight: 900; margin: 10px 0; }
+        .ins-detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 15px; }
+        .ins-detail-row:last-child { border-bottom: none; }
+        .ins-detail-label { color: var(--hint-color); font-weight: 500; }
+        .ins-detail-val { font-weight: 700; color: #fff; }
+        
+        /* Кнопка загрузки фото */
+        .file-upload-trigger {
+            background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 14px; padding: 14px; text-align: center; color: var(--link-color);
+            font-weight: 600; cursor: pointer; margin-bottom: 15px; font-size: 15px;
+        }
+        .insurance-image-preview {
+            width: 100%; border-radius: 14px; margin-top: 10px; border: 1px solid var(--card-border);
+            display: none; max-height: 400px; object-fit: contain; background: #000;
+        }
 
         /* ИСТОРИЯ */
         .subtitle-archive { color: var(--hint-color); font-size: 16px; margin-bottom: 24px; font-weight: 600;}
-        
-        .log-item-wrapper {
-            position: relative; margin-bottom: 14px; border-radius: 18px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .log-item-wrapper.removing { transform: scale(0.8) translateY(-20px); opacity: 0; margin-bottom: -70px; }
-
+        .log-item-wrapper { position: relative; margin-bottom: 14px; border-radius: 18px; }
+        .log-item-wrapper.removing { transform: scale(0.8) translateY(-20px); opacity: 0; margin-bottom: -70px; transition: all 0.3s; }
         .swipe-delete-container {
             position: absolute; top: 0; right: 0; width: 100px; height: 100%;
-            background-color: var(--kia-red); border-radius: 18px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; z-index: 1;
+            background-color: var(--kia-red); border-radius: 18px; display: flex; align-items: center; justify-content: center; z-index: 1;
         }
-        .swipe-delete-icon { font-size: 24px; transition: transform 0.2s ease; }
-        .log-item.swiped + .swipe-delete-container .swipe-delete-icon { transform: scale(1.2); }
-
+        .swipe-delete-icon { font-size: 24px; }
         .log-item { 
-            background: #1c1c1e; 
-            padding: 18px; position: relative; z-index: 2; 
-            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 18px; 
-            border: 1px solid var(--card-border); 
+            background: #1c1c1e; padding: 18px; position: relative; z-index: 2; 
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 18px; border: 1px solid var(--card-border); 
         }
         .log-item.swiped { transform: translateX(-80px); }
-        
         .log-top { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: baseline;}
         .log-date { font-size: 13px; color: var(--hint-color); font-weight: 600;}
         .log-cost { color: #ffffff; font-weight: 800; font-size: 16px;}
@@ -182,10 +179,10 @@
         .about-card-info { background: var(--card-bg); padding: 30px; border-radius: 20px; width: 90%; max-width: 320px; margin-bottom: 20px; border: 1px solid var(--card-border); backdrop-filter: blur(15px); }
         .creator-name { color: #ffffff; font-weight: 700; }
         .warning-text { font-size: 13px; color: var(--hint-color); margin-top: 20px; line-height: 1.5; font-weight: 500;}
-        .backup-btn { background: rgba(255,255,255,0.05); color: #ffffff; box-shadow: none; border: 1px solid rgba(255,255,255,0.2); }
-        .restore-btn { background: rgba(255,59,48,0.1); color: #ff453a; box-shadow: none; border: 1px solid rgba(255, 59, 48, 0.3); margin-top: 10px; }
+        .backup-btn { background: rgba(255,255,255,0.05); color: #ffffff; border: 1px solid rgba(255,255,255,0.2); }
+        .restore-btn { background: rgba(255,59,48,0.1); color: #ff453a; border: 1px solid rgba(255, 59, 48, 0.3); margin-top: 10px; }
 
-        /* Меню */
+        /* МЕНЮ НА 4 ВКЛАДКИ */
         .tab-bar {
             position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(10, 10, 12, 0.85);
             backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; justify-content: space-around;
@@ -193,12 +190,12 @@
         }
         .tab-btn { background: none; border: none; color: var(--hint-color); font-size: 10px; font-weight: 600; display: flex; flex-direction: column; align-items: center; flex: 1; transition: color 0.2s;}
         .tab-btn.active { color: var(--button-color); }
-        .tab-icon { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);}
+        .tab-icon { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s;}
         .tab-btn.active .tab-icon { transform: scale(1.2) translateY(-2px); }
         
-        .screen { display: none; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); }
+        .screen { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.3s, transform 0.3s; }
         .screen.active { display: block; opacity: 1; transform: translateY(0); }
-        #file-import-input { display: none; }
+        #file-import-input, #ins-file-hidden { display: none; }
     </style>
 </head>
 <body>
@@ -206,7 +203,6 @@
     <input type="file" id="file-import-input" accept=".json, .txt, text/plain, application/json" onchange="handleFileImport(event)">
 
     <div id="screen-garage" class="screen active content">
-        
         <div class="app-header-container animate-in" id="anim-header">
             <img src="car.JPG" onerror="this.style.display='none'" class="app-header-bg" alt="Kia Cerato">
             <div class="app-header-overlay"></div>
@@ -230,39 +226,26 @@
 
         <div class="widgets-container">
             <div class="service-widget animate-in" id="oil-widget" onclick="editOilSettings()" style="transition-delay: 0.1s;">
-                <div class="service-header">
-                    <span class="service-title">Масло</span>
-                    <span class="service-icon">💧</span>
-                </div>
+                <div class="service-header"> <span class="service-title">Масло</span> <span class="service-icon">💧</span> </div>
                 <div class="service-left-big" id="oil-remaining-text">--</div>
                 <div class="service-left-label">осталось км</div>
                 <div class="service-target" id="oil-next-text">След: --</div>
                 <div class="service-last-km" id="oil-last-text">Замена: --</div>
-                <div class="service-progress-bg">
-                    <div class="service-progress-fill" id="oil-progress"></div>
-                </div>
+                <div class="service-progress-bg"><div class="service-progress-fill" id="oil-progress"></div></div>
             </div>
 
             <div class="service-widget animate-in" id="grm-widget" onclick="editGrmSettings()" style="transition-delay: 0.2s;">
-                <div class="service-header">
-                    <span class="service-title">ГРМ</span>
-                    <span class="service-icon">⚙️</span>
-                </div>
+                <div class="service-header"> <span class="service-title">ГРМ</span> <span class="service-icon">⚙️</span> </div>
                 <div class="service-left-big" id="grm-remaining-text">--</div>
                 <div class="service-left-label">осталось км</div>
                 <div class="service-target" id="grm-next-text">След: --</div>
                 <div class="service-last-km" id="grm-last-text">Замена: --</div>
-                <div class="service-progress-bg">
-                    <div class="service-progress-fill" id="grm-progress"></div>
-                </div>
+                <div class="service-progress-bg"><div class="service-progress-fill" id="grm-progress"></div></div>
             </div>
         </div>
 
         <div class="input-form-container animate-in" id="anim-form" style="transition-delay: 0.3s;">
-            <div class="input-row">
-                <label>ПРОБЕГ (КМ)</label>
-                <input type="number" id="inp-mileage" placeholder="295000">
-            </div>
+            <div class="input-row"> <label>ПРОБЕГ (КМ)</label> <input type="number" id="inp-mileage" placeholder="295000"> </div>
             <div class="input-row">
                 <label>КАТЕГОРИЯ</label>
                 <select id="inp-category">
@@ -276,19 +259,43 @@
                     <option value="Другое">Другое</option>
                 </select>
             </div>
-            <div class="input-row">
-                <label>НАЗВАНИЕ РАБОТ</label>
-                <input type="text" id="inp-title" placeholder="Например: Замена масла">
-            </div>
-            <div class="input-row">
-                <label>СТОИМОСТЬ (₽)</label>
-                <input type="number" id="inp-cost" placeholder="0">
-            </div>
-            <div class="input-row">
-                <label>ЗАМЕТКИ</label>
-                <input type="text" id="inp-notes" placeholder="Бренд, артикул, СТО...">
-            </div>
+            <div class="input-row"> <label>НАЗВАНИЕ РАБОТ</label> <input type="text" id="inp-title" placeholder="Например: Замена масла"> </div>
+            <div class="input-row"> <label>СТОИМОСТЬ (₽)</label> <input type="number" id="inp-cost" placeholder="0"> </div>
+            <div class="input-row"> <label>ЗАМЕТКИ</label> <input type="text" id="inp-notes" placeholder="Бренд, артикул, СТО..."> </div>
             <button id="visible-save-btn" class="page-save-btn" onclick="saveRecord()">СОХРАНИТЬ ЗАПИСЬ</button>
+        </div>
+    </div>
+
+    <div id="screen-insurance" class="screen content">
+        <h1 style="font-size:32px; margin-bottom:20px;">Страховка</h1>
+        
+        <div class="insurance-status-card" id="ins-card-badge">
+            <div style="font-size:14px; text-transform:uppercase; letter-spacing:1px; font-weight:800; color:var(--hint-color);" id="ins-status-title">Статус полиса</div>
+            <div class="ins-days-big" id="ins-days-text">Не настроена</div>
+            <div style="font-size:13px; font-weight:600; color:var(--hint-color);" id="ins-date-subtext">Укажите данные ниже</div>
+        </div>
+
+        <div style="font-size:18px; font-weight:800; margin-bottom:12px; letter-spacing:0.3px;">Данные полиса</div>
+        <div class="input-form-container">
+            <div class="input-row">
+                <label>Дата окончания страховки</label>
+                <input type="date" id="ins-exp-date" onchange="saveInsurance()">
+            </div>
+            <div class="input-row">
+                <label>Страховая компания</label>
+                <input type="text" id="ins-company" placeholder="Например: Ингосстрах" oninput="saveInsurance()">
+            </div>
+            <div class="input-row">
+                <label>Номер полиса</label>
+                <input type="text" id="ins-number" placeholder="ХХХ № 0000000000" oninput="saveInsurance()">
+            </div>
+            
+            <input type="file" id="ins-file-hidden" accept="image/*" onchange="processInsurancePhoto(event)">
+            <div class="file-upload-trigger" onclick="document.getElementById('ins-file-hidden').click()">
+                📷 Загрузить / Сфотографировать бланк
+            </div>
+            
+            <img id="ins-preview" class="insurance-image-preview" alt="Бланк страховки">
         </div>
     </div>
 
@@ -302,27 +309,20 @@
         <h1 style="font-size:32px;">О программе</h1>
         <div class="about-container">
             <div class="about-card-info">
-                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 18.4</div>
-                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Ваше Авто</div>
-                <div style="color:var(--text-color); font-size:14px; font-weight:600;">
-                    Создатель: <span class="creator-name">romerioyalta</span>
-                </div>
+                <div style="font-size:22px; font-weight:800; margin-bottom:6px; color:#fff;">Версия 19.0</div>
+                <div style="color:var(--button-color); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Полный контроль</div>
+                <div style="color:var(--text-color); font-size:14px; font-weight:600;">Создатель: <span class="creator-name">romerioyalta</span></div>
                 <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-                
-                <button class="page-save-btn backup-btn" onclick="exportToFile()">
-                    📤 Резервная копия
-                </button>
-                <button class="page-save-btn restore-btn" onclick="triggerFileInput()">
-                    📥 Восстановить из файла
-                </button>
-                
-                <p class="warning-text">Обязательно сохраняйте файл резервной копии на устройство, чтобы не потерять данные.</p>
+                <button class="page-save-btn backup-btn" onclick="exportToFile()">📤 Резервная копия</button>
+                <button class="page-save-btn restore-btn" onclick="triggerFileInput()">📥 Восстановить из файла</button>
+                <p class="warning-text">Файл бэкапа теперь сохраняет историю ремонта, настройки масла, ГРМ и бланк страховки.</p>
             </div>
         </div>
     </div>
 
     <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('garage')"><span class="tab-icon">🛠</span><span>Гараж</span></button>
+        <button class="tab-btn" onclick="switchTab('insurance')"><span class="tab-icon">🛡️</span><span>Страховка</span></button>
         <button class="tab-btn" onclick="switchTab('archive')"><span class="tab-icon">📋</span><span>История</span></button>
         <button class="tab-btn" onclick="switchTab('about')"><span class="tab-icon">ℹ️</span><span>Инфо</span></button>
     </div>
@@ -330,7 +330,6 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        
         tg.setHeaderColor('#000000');
         tg.setBackgroundColor('#000000');
         
@@ -339,16 +338,20 @@
         const OIL_KEY = 'kia_oil_config_v3';
         const GRM_KEY = 'kia_grm_config_v1';
         const ODO_KEY = 'kia_current_odometer';
+        const INS_KEY = 'kia_ins_config_v1'; // Ключ для страховки
 
         let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let oilConfig = JSON.parse(localStorage.getItem(OIL_KEY)) || { lastKm: 0, interval: 7000 };
         let grmConfig = JSON.parse(localStorage.getItem(GRM_KEY)) || { lastKm: 0, interval: 50000 };
+        let insConfig = JSON.parse(localStorage.getItem(INS_KEY)) || { expDate: '', company: '', number: '', photo: '' };
         let currentOdometer = parseInt(localStorage.getItem(ODO_KEY)) || (logs.length > 0 ? parseInt(logs[0].mileage) : 0);
         let editingId = null;
 
+        // Инициализация
         loadPlate();
         updateOilWidget();
         updateGrmWidget();
+        loadInsuranceForm();
         document.getElementById('inp-mileage').value = currentOdometer;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -360,27 +363,16 @@
         });
 
         function animateValue(id, start, end, duration) {
-            if (start === end) {
-                document.getElementById(id).innerText = new Intl.NumberFormat('ru-RU').format(end);
-                return;
-            }
-            const obj = document.getElementById(id);
-            const range = end - start;
-            const minTimer = 50;
-            let stepTime = Math.abs(Math.floor(duration / range));
-            stepTime = Math.max(stepTime, minTimer);
-            const startTime = new Date().getTime();
-            const endTime = startTime + duration;
-            let timer;
+            if (start === end) { document.getElementById(id).innerText = new Intl.NumberFormat('ru-RU').format(end); return; }
+            const obj = document.getElementById(id); const range = end - start; const minTimer = 50;
+            let stepTime = Math.abs(Math.floor(duration / range)); stepTime = Math.max(stepTime, minTimer);
+            const startTime = new Date().getTime(); const endTime = startTime + duration; let timer;
             function run() {
-                const now = new Date().getTime();
-                const remaining = Math.max((endTime - now) / duration, 0);
-                const value = Math.round(end - (remaining * range));
-                obj.innerText = new Intl.NumberFormat('ru-RU').format(value);
+                const now = new Date().getTime(); const remaining = Math.max((endTime - now) / duration, 0);
+                const value = Math.round(end - (remaining * range)); obj.innerText = new Intl.NumberFormat('ru-RU').format(value);
                 if (value == end) { clearInterval(timer); }
             }
-            timer = setInterval(run, stepTime);
-            run();
+            timer = setInterval(run, stepTime); run();
         }
 
         function switchTab(tab) {
@@ -388,182 +380,187 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             tg.HapticFeedback.selectionChanged();
 
+            // Индексы кнопок меню теперь: 0-Гараж, 1-Страховка, 2-История, 3-Инфо
             if (tab === 'garage') {
                 document.getElementById('screen-garage').classList.add('active');
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                updateButtonsState();
-                updateOilWidget();
-                updateGrmWidget();
+                updateButtonsState(); updateOilWidget(); updateGrmWidget();
                 if (!editingId) document.getElementById('inp-mileage').value = currentOdometer;
+            } else if (tab === 'insurance') {
+                document.getElementById('screen-insurance').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                updateInsuranceWidget();
             } else {
                 exitEditMode();
                 if(tab === 'archive') {
                     document.getElementById('screen-archive').classList.add('active');
-                    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                    document.querySelectorAll('.tab-btn')[2].classList.add('active');
                     renderLogs();
                 } else {
                     document.getElementById('screen-about').classList.add('active');
-                    document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                    document.querySelectorAll('.tab-btn')[3].classList.add('active');
                 }
             }
         }
 
+        // --- ЛОГИКА СТРАХОВКИ ---
+        function loadInsuranceForm() {
+            document.getElementById('ins-exp-date').value = insConfig.expDate || '';
+            document.getElementById('ins-company').value = insConfig.company || '';
+            document.getElementById('ins-number').value = insConfig.number || '';
+            if (insConfig.photo) {
+                const preview = document.getElementById('ins-preview');
+                preview.src = insConfig.photo; preview.style.display = 'block';
+            }
+            updateInsuranceWidget();
+        }
+
+        function saveInsurance() {
+            insConfig.expDate = document.getElementById('ins-exp-date').value;
+            insConfig.company = document.getElementById('ins-company').value;
+            insConfig.number = document.getElementById('ins-number').value;
+            localStorage.setItem(INS_KEY, JSON.stringify(insConfig));
+            updateInsuranceWidget();
+        }
+
+        function updateInsuranceWidget() {
+            const card = document.getElementById('ins-card-badge');
+            const daysText = document.getElementById('ins-days-text');
+            const subtext = document.getElementById('ins-date-subtext');
+            const title = document.getElementById('ins-status-title');
+
+            if (!insConfig.expDate) {
+                daysText.innerText = "Не настроена"; daysText.style.color = "#ffffff";
+                subtext.innerText = "Укажите дату окончания ниже"; card.classList.remove('danger-pulse-card');
+                card.style.background = "#1c1c1e"; return;
+            }
+
+            const exp = new Date(insConfig.expDate); exp.setHours(0,0,0,0);
+            const today = new Date(); today.setHours(0,0,0,0);
+            const diffTime = exp - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            const formattedDate = exp.toLocaleDateString('ru-RU');
+            subtext.innerText = `Действует до: ${formattedDate} ${insConfig.company ? '• ' + insConfig.company : ''}`;
+
+            card.classList.remove('danger-pulse-card');
+            if (diffDays < 0) {
+                title.innerText = "ПОЛИС ИСТЕК"; daysText.innerText = "ПРОСРОЧЕНА";
+                daysText.style.color = "var(--kia-red)"; card.classList.add('danger-pulse-card');
+            } else if (diffDays === 0) {
+                title.innerText = "ВНИМАНИЕ"; daysText.innerText = "Заканчивается сегодня!";
+                daysText.style.color = "var(--yellow-color)"; card.style.background = "#2c2c2e";
+            } else {
+                title.innerText = "ПОЛИС АКТИВЕН";
+                daysText.innerText = `Осталось ${diffDays} дн.`;
+                if (diffDays <= 30) { daysText.style.color = "var(--yellow-color)"; card.style.background = "#2c2c2e"; } 
+                else { daysText.style.color = "var(--green-color)"; card.style.background = "rgba(50, 215, 75, 0.1)"; }
+            }
+        }
+
+        // Микро-движок сжатия больших фото с Айфона
+        function processInsurancePhoto(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width; let height = img.height;
+                    const MAX_SIZE = 1000; // Ограничиваем сторону в 1000 пикселей
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Переводим в сжатый JPG (70% качества) для экономии 90% памяти!
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    insConfig.photo = compressedBase64;
+                    localStorage.setItem(INS_KEY, JSON.stringify(insConfig));
+                    
+                    const preview = document.getElementById('ins-preview');
+                    preview.src = compressedBase64; preview.style.display = 'block';
+                    tg.HapticFeedback.notificationOccurred('success');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- ОСТАЛЬНАЯ СТАНДАРТНАЯ ЛОГИКА ---
         function saveRecord() {
             const mileage = document.getElementById('inp-mileage').value;
             const title = document.getElementById('inp-title').value;
             const costStr = document.getElementById('inp-cost').value;
-            
-            if (!mileage || !title) {
-                tg.showPopup({title: 'Внимание', message: 'Укажите пробег и название работы'});
-                tg.HapticFeedback.notificationOccurred('warning');
-                return;
-            }
-
+            if (!mileage || !title) { tg.showPopup({title: 'Внимание', message: 'Укажите пробег и название работы'}); return; }
             const recordData = {
-                id: editingId || Date.now(),
-                date: editingId ? getLogById(editingId).date : new Date().toLocaleDateString('ru-RU'),
-                mileage: mileage,
-                category: document.getElementById('inp-category').value,
-                title: title,
-                cost: costStr ? parseInt(costStr.replace(/\D/g,'')) : 0,
-                notes: document.getElementById('inp-notes').value
+                id: editingId || Date.now(), date: editingId ? getLogById(editingId).date : new Date().toLocaleDateString('ru-RU'),
+                mileage: mileage, category: document.getElementById('inp-category').value, title: title,
+                cost: costStr ? parseInt(costStr.replace(/\D/g,'')) : 0, notes: document.getElementById('inp-notes').value
             };
-
-            if (editingId) { logs = logs.map(l => l.id === editingId ? recordData : l); } 
-            else { logs.unshift(recordData); }
-
-            if (parseInt(mileage) > currentOdometer) {
-                currentOdometer = parseInt(mileage);
-                localStorage.setItem(ODO_KEY, currentOdometer);
-                document.getElementById('header-odometer').innerText = new Intl.NumberFormat('ru-RU').format(currentOdometer);
-            }
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-            clearForm();
-            exitEditMode();
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showPopup({message: editingId ? 'Изменения сохранены' : 'Запись добавлена!'});
-            
-            updateOilWidget(); 
-            updateGrmWidget();
+            if (editingId) { logs = logs.map(l => l.id === editingId ? recordData : l); } else { logs.unshift(recordData); }
+            if (parseInt(mileage) > currentOdometer) { currentOdometer = parseInt(mileage); localStorage.setItem(ODO_KEY, currentOdometer); document.getElementById('header-odometer').innerText = new Intl.NumberFormat('ru-RU').format(currentOdometer); }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); clearForm(); exitEditMode();
+            tg.HapticFeedback.notificationOccurred('success'); tg.showPopup({message: 'Запись сохранена!'});
+            updateOilWidget(); updateGrmWidget();
         }
 
         function updateOilWidget() {
-            const lastOilKm = parseInt(oilConfig.lastKm);
-            const interval = parseInt(oilConfig.interval);
-            const widget = document.getElementById('oil-widget');
-
-            if (lastOilKm === 0) {
-                document.getElementById('oil-remaining-text').innerText = "Нажать";
-                document.getElementById('oil-next-text').innerText = "";
-                document.getElementById('oil-last-text').innerText = "Настроить";
-                document.getElementById('oil-progress').style.width = "0%";
-                widget.classList.remove('danger');
-                return;
-            }
-            const nextOilKm = lastOilKm + interval;
-            const remaining = nextOilKm - currentOdometer;
-            
-            let percentLeft = (remaining / interval) * 100;
-            if (percentLeft > 100) percentLeft = 100;
-            if (percentLeft < 0) percentLeft = 0;
-
+            const lastOilKm = parseInt(oilConfig.lastKm); const interval = parseInt(oilConfig.interval); const widget = document.getElementById('oil-widget');
+            if (lastOilKm === 0) { document.getElementById('oil-remaining-text').innerText = "Нажать"; document.getElementById('oil-next-text').innerText = ""; document.getElementById('oil-last-text').innerText = "Настроить"; document.getElementById('oil-progress').style.width = "0%"; widget.classList.remove('danger-pulse-card'); return; }
+            const nextOilKm = lastOilKm + interval; const remaining = nextOilKm - currentOdometer;
+            let percentLeft = (remaining / interval) * 100; percentLeft = Math.max(0, Math.min(100, percentLeft));
             const bar = document.getElementById('oil-progress');
-            if (percentLeft > 35) bar.style.backgroundColor = "var(--green-color)";
-            else if (percentLeft > 15) bar.style.backgroundColor = "var(--yellow-color)";
-            else bar.style.backgroundColor = "var(--kia-red)";
+            if (percentLeft > 35) bar.style.backgroundColor = "var(--green-color)"; else if (percentLeft > 15) bar.style.backgroundColor = "var(--yellow-color)"; else bar.style.backgroundColor = "var(--kia-red)";
             bar.style.width = percentLeft + "%";
-
-            if (remaining <= 0) {
-                document.getElementById('oil-remaining-text').innerText = "МЕНЯЙ";
-                document.getElementById('oil-remaining-text').style.color = "var(--kia-red)";
-                widget.classList.add('danger');
-            } else {
-                document.getElementById('oil-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
-                document.getElementById('oil-remaining-text').style.color = "#ffffff";
-                widget.classList.remove('danger');
-            }
-            document.getElementById('oil-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextOilKm)}`;
-            document.getElementById('oil-last-text').innerText = `Замена: ${new Intl.NumberFormat('ru-RU').format(lastOilKm)}`;
+            if (remaining <= 0) { document.getElementById('oil-remaining-text').innerText = "МЕНЯЙ"; document.getElementById('oil-remaining-text').style.color = "var(--kia-red)"; widget.classList.add('danger-pulse-card'); } 
+            else { document.getElementById('oil-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining); document.getElementById('oil-remaining-text').style.color = "#ffffff"; widget.classList.remove('danger-pulse-card'); }
+            document.getElementById('oil-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextOilKm)}`; document.getElementById('oil-last-text').innerText = `Замена: ${new Intl.NumberFormat('ru-RU').format(lastOilKm)}`;
         }
 
         function editOilSettings() {
-            const newLast = prompt("МАСЛО:\nНа каком пробеге была замена? (число)", oilConfig.lastKm || "");
+            const newLast = prompt("MАСЛО:\nПробег замене? (число)", oilConfig.lastKm || "");
             if (newLast !== null && newLast.trim() !== "") {
-                const l = parseInt(newLast.replace(/\D/g,''));
-                if (isNaN(l)) { alert("Нужно ввести число!"); return; }
-                const newInt = prompt("МАСЛО:\nЧерез сколько км менять?", oilConfig.interval || "7000");
+                const l = parseInt(newLast.replace(/\D/g,'')); if (isNaN(l)) return;
+                const newInt = prompt("МАСЛО:\nИнтервал замены?", oilConfig.interval || "7000");
                 if (newInt !== null && newInt.trim() !== "") {
-                    const i = parseInt(newInt.replace(/\D/g,''));
-                    if (isNaN(i)) { alert("Нужно ввести число!"); return; }
-                    oilConfig = { lastKm: l, interval: i };
-                    localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
-                    document.getElementById('oil-progress').style.width = "0%";
-                    setTimeout(updateOilWidget, 50);
-                    tg.HapticFeedback.notificationOccurred('success');
+                    const i = parseInt(newInt.replace(/\D/g,'')); if (isNaN(i)) return;
+                    oilConfig = { lastKm: l, interval: i }; localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig));
+                    document.getElementById('oil-progress').style.width = "0%"; setTimeout(updateOilWidget, 50);
                 }
             }
         }
 
         function updateGrmWidget() {
-            const lastGrmKm = parseInt(grmConfig.lastKm);
-            const interval = parseInt(grmConfig.interval);
-            const widget = document.getElementById('grm-widget');
-
-            if (lastGrmKm === 0) {
-                document.getElementById('grm-remaining-text').innerText = "Нажать";
-                document.getElementById('grm-next-text').innerText = "";
-                document.getElementById('grm-last-text').innerText = "Настроить";
-                document.getElementById('grm-progress').style.width = "0%";
-                widget.classList.remove('danger');
-                return;
-            }
-            const nextGrmKm = lastGrmKm + interval;
-            const remaining = nextGrmKm - currentOdometer;
-            
-            let percentLeft = (remaining / interval) * 100;
-            if (percentLeft > 100) percentLeft = 100;
-            if (percentLeft < 0) percentLeft = 0;
-
+            const lastGrmKm = parseInt(grmConfig.lastKm); const interval = parseInt(grmConfig.interval); const widget = document.getElementById('grm-widget');
+            if (lastGrmKm === 0) { document.getElementById('grm-remaining-text').innerText = "Нажать"; document.getElementById('grm-next-text').innerText = ""; document.getElementById('grm-last-text').innerText = "Настроить"; document.getElementById('grm-progress').style.width = "0%"; widget.classList.remove('danger-pulse-card'); return; }
+            const nextGrmKm = lastGrmKm + interval; const remaining = nextGrmKm - currentOdometer;
+            let percentLeft = (remaining / interval) * 100; percentLeft = Math.max(0, Math.min(100, percentLeft));
             const bar = document.getElementById('grm-progress');
-            if (percentLeft > 30) bar.style.backgroundColor = "var(--green-color)";
-            else if (percentLeft > 10) bar.style.backgroundColor = "var(--yellow-color)";
-            else bar.style.backgroundColor = "var(--kia-red)";
+            if (percentLeft > 30) bar.style.backgroundColor = "var(--green-color)"; else if (percentLeft > 10) bar.style.backgroundColor = "var(--yellow-color)"; else bar.style.backgroundColor = "var(--kia-red)";
             bar.style.width = percentLeft + "%";
-
-            if (remaining <= 0) {
-                document.getElementById('grm-remaining-text').innerText = "МЕНЯЙ";
-                document.getElementById('grm-remaining-text').style.color = "var(--kia-red)";
-                widget.classList.add('danger');
-            } else {
-                document.getElementById('grm-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining);
-                document.getElementById('grm-remaining-text').style.color = "#ffffff";
-                widget.classList.remove('danger');
-            }
-            document.getElementById('grm-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextGrmKm)}`;
-            document.getElementById('grm-last-text').innerText = `Замена: ${new Intl.NumberFormat('ru-RU').format(lastGrmKm)}`;
+            if (remaining <= 0) { document.getElementById('grm-remaining-text').innerText = "МЕНЯЙ"; document.getElementById('grm-remaining-text').style.color = "var(--kia-red)"; widget.classList.add('danger-pulse-card'); } 
+            else { document.getElementById('grm-remaining-text').innerText = new Intl.NumberFormat('ru-RU').format(remaining); document.getElementById('grm-remaining-text').style.color = "#ffffff"; widget.classList.remove('danger-pulse-card'); }
+            document.getElementById('grm-next-text').innerText = `След: ${new Intl.NumberFormat('ru-RU').format(nextGrmKm)}`; document.getElementById('grm-last-text').innerText = `Замена: ${new Intl.NumberFormat('ru-RU').format(lastGrmKm)}`;
         }
 
         function editGrmSettings() {
-            const newLast = prompt("РЕМЕНЬ ГРМ:\nНа каком пробеге была замена?", grmConfig.lastKm || "");
+            const newLast = prompt("РЕМЕНЬ ГРМ:\nПробег замены?", grmConfig.lastKm || "");
             if (newLast !== null && newLast.trim() !== "") {
-                const l = parseInt(newLast.replace(/\D/g,''));
-                if (isNaN(l)) { alert("Нужно ввести число!"); return; }
-                const newInt = prompt("РЕМЕНЬ ГРМ:\nЧерез сколько км менять? (Обычно 50000)", grmConfig.interval || "50000");
+                const l = parseInt(newLast.replace(/\D/g,'')); if (isNaN(l)) return;
+                const newInt = prompt("РЕМЕНЬ ГРМ:\nИнтервал замены?", grmConfig.interval || "50000");
                 if (newInt !== null && newInt.trim() !== "") {
-                    const i = parseInt(newInt.replace(/\D/g,''));
-                    if (isNaN(i)) { alert("Нужно ввести число!"); return; }
-                    grmConfig = { lastKm: l, interval: i };
-                    localStorage.setItem(GRM_KEY, JSON.stringify(grmConfig));
-                    document.getElementById('grm-progress').style.width = "0%";
-                    setTimeout(updateGrmWidget, 50);
-                    tg.HapticFeedback.notificationOccurred('success');
+                    const i = parseInt(newInt.replace(/\D/g,'')); if (isNaN(i)) return;
+                    grmConfig = { lastKm: l, interval: i }; localStorage.setItem(GRM_KEY, JSON.stringify(grmConfig));
+                    document.getElementById('grm-progress').style.width = "0%"; setTimeout(updateGrmWidget, 50);
                 }
             }
         }
 
         function updateOdometerDisplay() { document.getElementById('header-odometer').innerText = new Intl.NumberFormat('ru-RU').format(currentOdometer); }
-        
         function editOdometer() {
              const newVal = prompt("Текущий реальный пробег авто (на одометре):", currentOdometer);
              if (newVal !== null && newVal.trim() !== "") {
@@ -571,85 +568,47 @@
                  if (!isNaN(parsed)) {
                      currentOdometer = parsed; localStorage.setItem(ODO_KEY, currentOdometer);
                      document.getElementById('header-odometer').innerText = new Intl.NumberFormat('ru-RU').format(currentOdometer);
-                     document.getElementById('oil-progress').style.width = "0%";
-                     document.getElementById('grm-progress').style.width = "0%";
-                     setTimeout(() => { updateOilWidget(); updateGrmWidget(); }, 50);
+                     document.getElementById('oil-progress').style.width = "0%"; document.getElementById('grm-progress').style.width = "0%";
+                     setTimeout(() => { updateOilWidget(); updateGrmWidget(); updateInsuranceWidget(); }, 50);
                      document.getElementById('inp-mileage').value = currentOdometer; 
-                     tg.HapticFeedback.notificationOccurred('success');
                  }
              }
         }
 
         function updateButtonsState() {
             const btn = document.getElementById('visible-save-btn');
-            if (editingId) {
-                btn.innerText = "СОХРАНИТЬ ИЗМЕНЕНИЯ";
-                btn.classList.add('edit-mode');
-            } else {
-                btn.innerText = "СОХРАНИТЬ ЗАПИСЬ";
-                btn.classList.remove('edit-mode');
-            }
+            if (editingId) { btn.innerText = "СОХРАНИТЬ ИЗМЕНЕНИЯ"; btn.classList.add('edit-mode'); } 
+            else { btn.innerText = "СОХРАНИТЬ ЗАПИСЬ"; btn.classList.remove('edit-mode'); }
         }
-
         window.startEdit = function(id) {
-            const log = getLogById(id);
-            if (!log) return;
-            editingId = id;
-            document.getElementById('inp-mileage').value = log.mileage;
-            document.getElementById('inp-category').value = log.category;
-            document.getElementById('inp-title').value = log.title;
-            document.getElementById('inp-cost').value = log.cost;
-            document.getElementById('inp-notes').value = log.notes;
+            const log = getLogById(id); if (!log) return; editingId = id;
+            document.getElementById('inp-mileage').value = log.mileage; document.getElementById('inp-category').value = log.category;
+            document.getElementById('inp-title').value = log.title; document.getElementById('inp-cost').value = log.cost; document.getElementById('inp-notes').value = log.notes;
             switchTab('garage');
         }
-
-        function exitEditMode() {
-            editingId = null; updateButtonsState();
-            if(!document.getElementById('inp-mileage').value) { document.getElementById('inp-mileage').value = currentOdometer; }
-        }
-
-        function clearForm() {
-            document.getElementById('inp-title').value = ''; document.getElementById('inp-cost').value = ''; document.getElementById('inp-notes').value = '';
-        }
-
+        function exitEditMode() { editingId = null; updateButtonsState(); if(!document.getElementById('inp-mileage').value) { document.getElementById('inp-mileage').value = currentOdometer; } }
+        function clearForm() { document.getElementById('inp-title').value = ''; document.getElementById('inp-cost').value = ''; document.getElementById('inp-notes').value = ''; }
         function getLogById(id) { return logs.find(l => l.id === id); }
 
         function renderLogs() {
             const container = document.getElementById('logs-container'); container.innerHTML = ''; let total = 0;
-            if (logs.length === 0) {
-                container.innerHTML = '<p style="text-align:center;color:gray;margin-top:50px;">История пока пуста</p>';
-                document.getElementById('total-spent').innerText = 'Всего потрачено: 0 ₽'; return;
-            }
+            if (logs.length === 0) { container.innerHTML = '<p style="text-align:center;color:gray;margin-top:50px;">История пока пуста</p>'; document.getElementById('total-spent').innerText = 'Всего потрачено: 0 ₽'; return; }
             logs.forEach(log => {
                 total += log.cost;
                 const wrapper = document.createElement('div'); wrapper.className = 'log-item-wrapper'; wrapper.id = `log-${log.id}`;
                 wrapper.innerHTML = `
-                    <div class="swipe-delete-container" onclick="deleteLogConfirm(${log.id})">
-                        <span class="swipe-delete-icon">🗑</span>
-                    </div>
+                    <div class="swipe-delete-container" onclick="deleteLogConfirm(${log.id})"><span class="swipe-delete-icon">🗑</span></div>
                     <div class="log-item" onclick="handleLogClick(event, ${log.id})">
-                        <div class="log-top">
-                            <span class="log-date">${log.date}</span>
-                            <span style="font-weight:800; font-size:15px; color:#fff;">${log.mileage} км</span>
-                        </div>
-                        <div class="log-part">${log.title}</div>
-                        <div class="log-details">${log.category} ${log.notes ? '• '+log.notes : ''}</div>
+                        <div class="log-top"><span class="log-date">${log.date}</span><span style="font-weight:800; font-size:15px; color:#fff;">${log.mileage} км</span></div>
+                        <div class="log-part">${log.title}</div><div class="log-details">${log.category} ${log.notes ? '• '+log.notes : ''}</div>
                         <span class="log-cost">${new Intl.NumberFormat('ru-RU').format(log.cost)} ₽</span>
                     </div>
                 `;
-                enableSwipe(wrapper.querySelector('.log-item')); 
-                container.appendChild(wrapper);
+                enableSwipe(wrapper.querySelector('.log-item')); container.appendChild(wrapper);
             });
             document.getElementById('total-spent').innerText = `Всего потрачено: ${new Intl.NumberFormat('ru-RU').format(total)} ₽`;
         }
-
-        function handleLogClick(event, id) {
-            if (event.currentTarget.classList.contains('swiped')) {
-                event.currentTarget.classList.remove('swiped'); return;
-            }
-            startEdit(id);
-        }
-
+        function handleLogClick(event, id) { if (event.currentTarget.classList.contains('swiped')) { event.currentTarget.classList.remove('swiped'); return; } startEdit(id); }
         function enableSwipe(element) {
             let startX = 0; let startY = 0; let isSwiping = false;
             element.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; startY = e.changedTouches[0].screenY; isSwiping = false; }, {passive: true});
@@ -659,73 +618,43 @@
             }, {passive: false});
             element.addEventListener('touchend', e => {
                 if (!isSwiping) return; 
-                if (e.changedTouches[0].screenX + 70 < startX) {
-                    document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped'));
-                    element.classList.add('swiped'); tg.HapticFeedback.impactOccurred('light');
-                } else if (e.changedTouches[0].screenX > startX - 70) { element.classList.remove('swiped'); }
+                if (e.changedTouches[0].screenX + 70 < startX) { document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped')); element.classList.add('swiped'); } 
+                else if (e.changedTouches[0].screenX > startX - 70) { element.classList.remove('swiped'); }
             }, {passive: true});
         }
-
-        document.addEventListener('click', e => { if (!e.target.closest('.log-item-wrapper')) document.querySelectorAll('.log-item.swiped').forEach(i => i.classList.remove('swiped')); });
 
         function deleteLogConfirm(id) {
              const wrapper = document.getElementById(`log-${id}`);
              tg.showConfirm("Удалить эту запись навсегда?", function(ok) { 
-                 if (ok) { 
-                     wrapper.classList.add('removing'); tg.HapticFeedback.notificationOccurred('success');
-                     setTimeout(() => {
-                         logs = logs.filter(l => l.id !== id); 
-                         localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); 
-                         renderLogs(); updateOilWidget(); updateGrmWidget(); 
-                     }, 300);
-                 } else { wrapper.querySelector('.log-item').classList.remove('swiped'); }
+                 if (ok) { wrapper.classList.add('removing'); setTimeout(() => { logs = logs.filter(l => l.id !== id); localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); renderLogs(); updateOilWidget(); updateGrmWidget(); }, 300); } 
+                 else { wrapper.querySelector('.log-item').classList.remove('swiped'); }
              });
         }
 
-        function loadPlate() {
-            const savedPlate = localStorage.getItem(PLATE_KEY);
-            if (savedPlate) {
-                const parts = savedPlate.split('|');
-                if (parts.length === 2) {
-                    document.getElementById('plate-text').innerText = parts[0];
-                    document.getElementById('region-text').innerText = parts[1];
-                }
-            }
-        }
-
+        function loadPlate() { const savedPlate = localStorage.getItem(PLATE_KEY); if (savedPlate) { const parts = savedPlate.split('|'); if (parts.length === 2) { document.getElementById('plate-text').innerText = parts[0]; document.getElementById('region-text').innerText = parts[1]; } } }
         function editPlate() {
-            tg.showPopup({ title: 'Госномер', message: 'Введите номер и регион через пробел (например: А463РН 82)', buttons: [{type: 'ok', id: 'save'}, {type: 'cancel'}] }, function(btn) {
+            tg.showPopup({ title: 'Госномер', message: 'Введите номер и регион через пробел', buttons: [{type: 'ok', id: 'save'}, {type: 'cancel'}] }, function(btn) {
                 if (btn === 'save') {
                     setTimeout(() => {
-                        const input = prompt("Номер и регион (Например: А463РН 82):", document.getElementById('plate-text').innerText + " " + document.getElementById('region-text').innerText);
+                        const input = prompt("Номер и регион:", document.getElementById('plate-text').innerText + " " + document.getElementById('region-text').innerText);
                         if (input) {
                             const clean = input.trim().toUpperCase(); const match = clean.match(/^(.+?)\s*(\d{2,3})$/); 
-                            if (match) {
-                                const newNum = match[1].replace(/\s/g, ''); const newReg = match[2];
-                                document.getElementById('plate-text').innerText = newNum; document.getElementById('region-text').innerText = newReg;
-                                localStorage.setItem(PLATE_KEY, newNum + '|' + newReg);
-                            } else alert("Неверный формат!");
+                            if (match) { const newNum = match[1].replace(/\s/g, ''); const newReg = match[2]; document.getElementById('plate-text').innerText = newNum; document.getElementById('region-text').innerText = newReg; localStorage.setItem(PLATE_KEY, newNum + '|' + newReg); }
                         }
                     }, 100);
                 }
             });
         }
 
+        // РЕЗЕРВНАЯ КОПИЯ (ТЕПЕРЬ С ВКЛЮЧЕНИЕМ СТРАХОВКИ)
         function exportToFile() {
-            const fullBackup = { logs: logs, oilConfig: oilConfig, grmConfig: grmConfig, currentOdometer: currentOdometer, plate: localStorage.getItem(PLATE_KEY) || "" };
+            const fullBackup = { logs: logs, oilConfig: oilConfig, grmConfig: grmConfig, insConfig: insConfig, currentOdometer: currentOdometer, plate: localStorage.getItem(PLATE_KEY) || "" };
             const dataStr = JSON.stringify(fullBackup, null, 2);
             const date = new Date().toLocaleDateString('ru-RU').replace(/\./g, '-');
             const fileName = `Kia_Cerato_Backup_${date}.txt`;
             const file = new File([dataStr], fileName, { type: "text/plain" });
-
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'Резервная копия', text: 'Файл базы данных' }).then(() => { tg.HapticFeedback.notificationOccurred('success'); }).catch((e) => { console.log(e); });
-            } else {
-                const blob = new Blob([dataStr], { type: "text/plain" }); const url = URL.createObjectURL(blob);
-                const a = document.createElement('a'); a.href = url; a.download = fileName;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-                tg.HapticFeedback.notificationOccurred('success');
-            }
+            if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Резервная копия' }).catch((e) => console.log(e)); } 
+            else { const blob = new Blob([dataStr], { type: "text/plain" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
         }
         function triggerFileInput() { document.getElementById('file-import-input').click(); }
         function handleFileImport(event) {
@@ -734,21 +663,21 @@
             reader.onload = function(e) {
                 try {
                     const content = e.target.result; const parsed = JSON.parse(content); 
-                    if (confirm("Внимание! Текущие данные будут удалены и заменены данными из файла. Продолжить?")) {
+                    if (confirm("Заменить текущие данные данными из файла?")) {
                         if (Array.isArray(parsed)) { logs = parsed; localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); } else {
                             if (parsed.logs) { logs = parsed.logs; localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); }
                             if (parsed.oilConfig) { oilConfig = parsed.oilConfig; localStorage.setItem(OIL_KEY, JSON.stringify(oilConfig)); }
                             if (parsed.grmConfig) { grmConfig = parsed.grmConfig; localStorage.setItem(GRM_KEY, JSON.stringify(grmConfig)); }
+                            if (parsed.insConfig) { insConfig = parsed.insConfig; localStorage.setItem(INS_KEY, JSON.stringify(insConfig)); }
                             if (parsed.currentOdometer) { currentOdometer = parsed.currentOdometer; localStorage.setItem(ODO_KEY, currentOdometer); document.getElementById('inp-mileage').value = currentOdometer; }
-                            if (parsed.plate) { localStorage.setItem(PLATE_KEY, parsed.plate); }
+                            if (parsed.plate) localStorage.setItem(PLATE_KEY, parsed.plate);
                         }
-                        document.getElementById('oil-progress').style.width = "0%";
-                        document.getElementById('grm-progress').style.width = "0%";
-                        loadPlate(); updateOdometerDisplay(); renderLogs();
+                        document.getElementById('oil-progress').style.width = "0%"; document.getElementById('grm-progress').style.width = "0%";
+                        loadPlate(); updateOdometerDisplay(); renderLogs(); loadInsuranceForm();
                         setTimeout(() => { updateOilWidget(); updateGrmWidget(); }, 100);
-                        tg.showPopup({message: 'Данные успешно загружены!'}); tg.HapticFeedback.notificationOccurred('success');
+                        tg.showPopup({message: 'Успешно восстановлено!'});
                     }
-                } catch (err) { alert("Ошибка: Неверный файл."); }
+                } catch (err) { alert("Ошибка файла."); }
             };
             reader.readAsText(file); event.target.value = '';
         }
