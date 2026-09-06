@@ -225,6 +225,7 @@
 
     <input type="file" id="file-import-input" accept=".json, .txt, text/plain, application/json" onchange="handleFileImport(event)">
 
+    <!-- ЭКРАН 1: ГАРАЖ -->
     <div id="screen-garage" class="screen active content">
         <div class="app-header-container animate-in" id="anim-header">
             <img src="car.JPG" onerror="this.style.display='none'" class="app-header-bg" alt="Kia Cerato">
@@ -267,6 +268,7 @@
             </div>
         </div>
 
+        <!-- ПЛАШКА СТРАХОВКИ НА ГЛАВНОЙ -->
         <div class="insurance-banner animate-in" id="garage-ins-banner" onclick="switchTab('insurance')" style="transition-delay: 0.25s;">
             <div class="ins-banner-left">
                 <span class="ins-banner-icon">🛡️</span>
@@ -303,9 +305,11 @@
         </div>
     </div>
 
+    <!-- ЭКРАН 2: СТРАХОВКА -->
     <div id="screen-insurance" class="screen content">
         <h1 style="font-size:32px; margin-bottom:20px;">Страховка</h1>
         
+        <!-- Виджет статуса страховки -->
         <div class="insurance-status-card" id="ins-card-badge">
             <div style="font-size:14px; text-transform:uppercase; letter-spacing:1px; font-weight:800; color:var(--hint-color);" id="ins-status-title">Статус полиса</div>
             <div class="ins-days-big" id="ins-days-text">Не настроена</div>
@@ -330,11 +334,13 @@
 
         <div style="font-size:18px; font-weight:800; margin-top: 24px; margin-bottom:12px; letter-spacing:0.3px;">Файл полиса</div>
         
-        <div class="insurance-pdf-preview" onclick="window.open('policy.pdf', '_blank')">
+        <!-- ПРЯМАЯ КНОПКА НА ВАШ СЕРВЕРНЫЙ PDF -->
+        <div class="insurance-pdf-preview" style="display: block;" onclick="window.open('policy.pdf', '_blank')">
             📄 Открыть policy.pdf<br>
             <span style="font-size: 12px; color: var(--hint-color); font-weight:500;">Файл загружен с вашего сервера (GitHub)</span>
         </div>
 
+        <!-- Оставил загрузку фото чисто на всякий случай -->
         <input type="file" id="ins-file-hidden" accept="image/*" onchange="processInsurancePhoto(event)">
         <div class="file-upload-trigger" onclick="document.getElementById('ins-file-hidden').click()" style="margin-top: 12px;">
             📷 Или загрузить картинку/фото бланка
@@ -342,12 +348,14 @@
         <img id="ins-preview" class="insurance-image-preview" alt="Бланк страховки">
     </div>
 
+    <!-- ЭКРАН 3: ИСТОРИЯ -->
     <div id="screen-archive" class="screen content">
         <h1 style="font-size:32px;">История</h1>
         <div class="subtitle-archive" id="total-spent">Всего потрачено: 0 ₽</div>
         <div id="logs-container"></div>
     </div>
 
+    <!-- ЭКРАН 4: ИНФО -->
     <div id="screen-about" class="screen content">
         <h1 style="font-size:32px;">О программе</h1>
         <div class="about-container">
@@ -362,6 +370,7 @@
         </div>
     </div>
 
+    <!-- МЕНЮ НА 4 КНОПКИ -->
     <div class="tab-bar">
         <button class="tab-btn active" onclick="switchTab('garage')"><span class="tab-icon">🛠</span><span>Гараж</span></button>
         <button class="tab-btn" onclick="switchTab('insurance')"><span class="tab-icon">🛡️</span><span>Страховка</span></button>
@@ -529,7 +538,6 @@
             }
         }
 
-        // Обработка ТОЛЬКО картинок
         function processInsurancePhoto(event) {
             const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
